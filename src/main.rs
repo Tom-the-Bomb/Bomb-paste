@@ -11,7 +11,7 @@ use axum::{
     extract::Path,
     body::Body,
     Router,
-    Json,
+    Form,
 };
 use mongodb::{
     options::ClientOptions,
@@ -26,13 +26,13 @@ use tower_http::services::ServeDir;
 
 static COLLECTION: OnceLock<Collection<models::PasteModel>> = OnceLock::new();
 
-async fn post_root(Json(payload): Json<models::FormPayload>) -> impl IntoResponse {
-    if payload.content.len() > 1 {
+async fn post_root(Form(payload): Form<models::FormPayload>) -> impl IntoResponse {
+    if payload.editor_content.len() > 1 {
         let id = helpers::generate_id(20);
         let collection = COLLECTION.get().unwrap();
 
         collection.insert_one(
-            models::PasteModel { id: id.clone(), content: payload.content}, None
+            models::PasteModel { id: id.clone(), content: payload.editor_content}, None
         ).await.unwrap();
 
         Redirect::to(&*format!("/{id}"));

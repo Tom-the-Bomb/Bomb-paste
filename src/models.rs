@@ -13,7 +13,7 @@ pub struct Config {
 
 #[derive(Deserialize)]
 pub struct FormPayload {
-    pub content: String,
+    pub editor_content: String,
 }
 
 
