@@ -13,4 +13,5 @@ axum = "0.5.9"
 serde = "1.0.137"
 mongodb = "2.2.2"
 askama = "0.11.1"
+tower-http = { version = "0.3.4", features = ["full"] }
 tokio = { version = "1.19.2", features = ["full"] }

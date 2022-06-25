@@ -18,13 +18,13 @@ function main() {
     let form = document.getElementById("pasteForm");
 
     if (saveButton) {
-        saveButton.onClick = () => {
+        saveButton.onclick = () => {
             form.submit();
         };
     }
 
     if (editButton) {
-        editButton.onClick = () => {
+        editButton.onclick = () => {
             const previousContent = document.getElementById("content").value;
 
             window.location.href = "/";

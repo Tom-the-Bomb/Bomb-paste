@@ -6,8 +6,9 @@ mod templates;
 
 use axum::{
     response::{Redirect, IntoResponse, Html},
+    routing::{get_service, get},
+    http::StatusCode,
     extract::Path,
-    routing::get,
     body::Body,
     Router,
     Json,
@@ -21,6 +22,7 @@ use mongodb::{
 use askama::Template;
 use std::sync::OnceLock;
 use std::net::SocketAddr;
+use tower_http::services::ServeDir;
 
 static COLLECTION: OnceLock<Collection<models::PasteModel>> = OnceLock::new();
 
@@ -95,7 +97,14 @@ async fn run(app: Router<Body>) {
 async fn main() {
     let app: Router<Body> = Router::new()
         .route("/", get(get_root).post(post_root))
-        .route("/:paste_id", get(get_paste));
+        .route("/:paste_id", get(get_paste))
+        .fallback(get_service(ServeDir::new("./static/"))
+        .handle_error(|err| async move {
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                format!("Failed to serve files: {err}"),
+            )
+        }));
 
     init_mongo().await.unwrap();
 
