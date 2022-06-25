@@ -1,0 +1,3 @@
+@ECHO off
+
+cargo run
