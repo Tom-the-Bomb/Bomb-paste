@@ -1,0 +1,16 @@
+cargo-features = ["edition2021"]
+
+[package]
+name = "bomb-paste"
+version = "0.1.0"
+license = "MIT"
+edition = "2021"
+
+[dependencies]
+toml = "0.5.9"
+rand = "0.8.5"
+axum = "0.5.9"
+serde = "1.0.137"
+mongodb = "2.2.2"
+askama = "0.11.1"
+tokio = { version = "1.19.2", features = ["full"] }

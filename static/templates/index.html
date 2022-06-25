@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block title %}Bomb-Paste - Home{% endblock %}
+{% block main_content %}
+<div contenteditable="true">
+    <form method="POST" id="pasteForm">
+        <div id="content"></div>
+    </form>
+</div>
+{% endblock %}

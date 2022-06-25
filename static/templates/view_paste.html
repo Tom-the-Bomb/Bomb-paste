@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}Bomb-Paste - paste{% endblock %}
+{% block edit_button %}
+<button class='btn btn-dark' id="editButton">
+    <img src="../assets/edit.svg">
+</button>
+{% endblock %}
+{% block content %}
+<div contenteditable="true">
+    <form method="POST" id="pasteForm">
+        <div id="content">{{ paste_content }}</div>
+    </form>
+</div>
+{% endblock %}
+<script defer>
+    highlightResult();
+</script>
