@@ -48,3 +48,14 @@ footer {
     width: 100%!important;
     height: 100vh;
 }
+
+#mystery-image {
+    -webkit-transition: -webkit-transform 0.3s;
+    transition: -webkit-transform 0.3s;
+    transition: transform 0.3s;
+    transition: transform 0.3s, -webkit-transform 0.3s;
+}
+
+#mystery-image:hover {
+    transform: scale(1.3);
+}
