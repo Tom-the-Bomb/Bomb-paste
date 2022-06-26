@@ -13,7 +13,12 @@ async function main() {
     editor.renderer.updateFontSize();
 
     if (sessionStorage.getItem("previousContent")) {
-        editor.setValue(sessionStorage.getItem("previousContent"), 1)
+        editor.setValue(sessionStorage.getItem("previousContent"), 1);
+        sessionStorage.removeItem("previousContent");
+    }
+
+    if (window.location.pathname.match(/\/[a-zA-Z0-9]{20}#?.*$/)) {
+        highlightResult();
     }
 
     let saveButton = document.getElementById('saveButton');
@@ -45,11 +50,13 @@ function highlightResult() {
         highlightGutterLine: false,
     });
 
-    let element = document.getElementById('content');
+    let value = editor.getValue();
 
-    language = hljs.highlightAuto(element.value);
+    let language = hljs.highlightAuto(value);
+    language = language.language || language.secondBest
+
     editor.session.setMode(
-        'ace/mode/' + language.language || language.secondBest
+        'ace/mode/' + language,
     );
 }
 
@@ -62,7 +69,7 @@ async function makePostRequest(value) {
         body: JSON.stringify({
             'content': value,
         }),
-    }
+    };
 
     let resp = await fetch('/upload', payload);
     return await resp.json();
