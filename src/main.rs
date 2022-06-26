@@ -24,7 +24,11 @@ use askama::Template;
 use std::sync::OnceLock;
 use std::net::SocketAddr;
 use std::time::Duration;
-use tower::{ServiceBuilder, buffer::BufferLayer, limit::RateLimitLayer,};
+use tower::{
+    ServiceBuilder,
+    buffer::BufferLayer,
+    limit::RateLimitLayer
+};
 use tower_http::services::ServeDir;
 
 static COLLECTION: OnceLock<Collection<models::PasteModel>> = OnceLock::new();
