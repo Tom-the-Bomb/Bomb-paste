@@ -36,9 +36,9 @@ async fn post_upload(Json(payload): Json<models::FormPayload>) -> impl IntoRespo
             models::PasteModel { id: id.clone(), content: payload.content}, None
         ).await.unwrap();
 
-        return Json(models::PasteJsonResponse { id: id }).into_response();
+        Json(models::PasteJsonResponse { id: id }).into_response()
     } else {
-        return StatusCode::BAD_REQUEST.into_response();
+        StatusCode::BAD_REQUEST.into_response()
     }
 }
 
