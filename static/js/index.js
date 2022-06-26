@@ -23,6 +23,7 @@ async function main() {
 
     let saveButton = document.getElementById('saveButton');
     let editButton = document.getElementById('editButton');
+    let newButton = document.getElementById('newButton')
 
     if (saveButton) {
         saveButton.addEventListener('click', async () => {
@@ -38,6 +39,12 @@ async function main() {
             const previousContent = editor.getValue();
             sessionStorage.setItem("previousContent", previousContent);
 
+            window.location.href = '/';
+        });
+    }
+
+    if (newButton) {
+        newButton.addEventListener('click', () => {
             window.location.href = '/';
         });
     }
