@@ -13,7 +13,7 @@ pub struct Config {
 
 #[derive(Deserialize)]
 pub struct FormPayload {
-    pub editor_content: String,
+    pub content: String,
 }
 
 
@@ -21,4 +21,9 @@ pub struct FormPayload {
 pub struct PasteModel {
     pub id: String,
     pub content: String,
+}
+
+#[derive(Serialize)]
+pub struct PasteJsonResponse {
+    pub id: String,
 }

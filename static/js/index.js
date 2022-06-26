@@ -1,7 +1,7 @@
-var editor = ace.edit("content");
+var editor = ace.edit('content');
 
-function main() {
-    editor.setTheme("ace/theme/dracula");
+async function main() {
+    editor.setTheme('ace/theme/dracula');
 
     editor.setBehavioursEnabled(true);
     editor.session.setOptions({
@@ -12,47 +12,61 @@ function main() {
     editor.container.style.lineHeight = 2;
     editor.renderer.updateFontSize();
 
-    let saveButton = document.getElementById("saveButton");
-    let editButton = document.getElementById("editButton");
+    if (sessionStorage.getItem("previousContent")) {
+        editor.setValue(sessionStorage.getItem("previousContent"), 1)
+    }
 
-    let form = document.getElementById("pasteForm");
+    let saveButton = document.getElementById('saveButton');
+    let editButton = document.getElementById('editButton');
 
     if (saveButton) {
-        saveButton.onclick = () => {
-            form.submit();
-        };
+        saveButton.addEventListener('click', async () => {
+            const value = editor.getValue();
+
+            let result = await makePostRequest(value);
+            window.location.href = '/' + result.id;
+        });
     }
 
     if (editButton) {
-        editButton.onclick = () => {
-            const previousContent = document.getElementById("content").value;
+        editButton.addEventListener('click', () => {
+            const previousContent = editor.getValue();
+            sessionStorage.setItem("previousContent", previousContent);
 
-            window.location.href = "/";
-            let content = document.getElementById("content");
-            content.value = previousContent
-
-            form.submit();
-        };
+            window.location.href = '/';
+        });
     }
 }
 
-function setReadOnly() {
+function highlightResult() {
+    console.log(1)
     editor.setOptions({
         readOnly: true,
         highlightActiveLine: false,
         highlightGutterLine: false,
-    })
-}
-
-function highlightResult() {
-    let element = document.getElementById("content")
+    });
+    console.log(2)
+    let element = document.getElementById('content');
 
     language = hljs.highlightAuto(element.value);
     editor.session.setMode(
-        "ace/mode/" + language.language || language.secondBest
+        'ace/mode/' + language.language || language.secondBest
     );
+}
 
-    setReadOnly();
+async function makePostRequest(value) {
+    let payload = {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            'content': value,
+        }),
+    }
+
+    let resp = await fetch('/upload', payload);
+    return await resp.json();
 }
 
 main();

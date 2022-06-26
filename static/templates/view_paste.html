@@ -1,17 +1,22 @@
 {% extends "base.html" %}
 {% block title %}Bomb-Paste - paste{% endblock %}
+
+{% block save_button %}
+<button class="btn btn-dark" id="saveButton" title="Save" disabled>
+    <img src="../assets/save.svg">
+</button>
+{% endblock %}
+
 {% block edit_button %}
-<button class='btn btn-dark' id="editButton">
+<button class='btn btn-dark' id="editButton" title="Clone & Edit">
     <img src="../assets/edit.svg">
 </button>
 {% endblock %}
-{% block content %}
-<div contenteditable="true">
-    <form method="POST" id="pasteForm">
-        <div id="content">{{ paste_content }}</div>
-    </form>
-</div>
+
+{% block main_content %}
+<div id="content" contenteditable="false">{{ paste_content }}</div>
 {% endblock %}
-<script defer>
+
+<script>
     highlightResult();
 </script>

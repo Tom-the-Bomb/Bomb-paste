@@ -4,7 +4,7 @@
         <meta charset="UTF-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>{% block title %} Bomb-Paste {% endblock %}</title>
+        <title>{% block title %}Bomb-Paste{% endblock %}</title>
 
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.1.0/styles/default.min.css">
@@ -25,14 +25,14 @@
                 </button>
                 <div class="collapse navbar-collapse" id="navbar">
                     <div class="navbar-nav">
-                        <button class="btn btn-dark" id="saveButton">
-                            <img src="../assets/save.svg">
-                        </button>
                         <div>
-                            {% block edit_button %} {% endblock %}
+                            {% block new_button %} {% endblock %}
                         </div>
                         <div>
-
+                            {% block save_button %} {% endblock %}
+                        </div>
+                        <div>
+                            {% block edit_button %} {% endblock %}
                         </div>
                     </div>
                 </div>
