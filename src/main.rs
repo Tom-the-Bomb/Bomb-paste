@@ -103,6 +103,7 @@ async fn run(app: Router<Body>) {
                 .expect("Failed to await for SIGINT")
         });
 
+    println!("[Server Initialized]");
     server.await.expect("Failed to start server");
 }
 
