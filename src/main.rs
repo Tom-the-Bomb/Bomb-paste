@@ -5,6 +5,7 @@ mod helpers;
 mod templates;
 
 use axum::{
+    error_handling::HandleErrorLayer,
     response::{Html, IntoResponse},
     routing::{get, post, get_service},
     http::StatusCode,
@@ -22,13 +23,15 @@ use mongodb::{
 use askama::Template;
 use std::sync::OnceLock;
 use std::net::SocketAddr;
+use std::time::Duration;
+use tower::{ServiceBuilder, buffer::BufferLayer, limit::RateLimitLayer,};
 use tower_http::services::ServeDir;
 
 static COLLECTION: OnceLock<Collection<models::PasteModel>> = OnceLock::new();
 
 
 async fn post_upload(Json(payload): Json<models::FormPayload>) -> impl IntoResponse {
-    if payload.content.len() > 1 {
+    if payload.content.len() > 0 {
         let id = helpers::generate_id(20);
         let collection = COLLECTION.get().unwrap();
 
@@ -45,7 +48,7 @@ async fn post_upload(Json(payload): Json<models::FormPayload>) -> impl IntoRespo
 
 async fn get_root() -> Html<String> {
     let template = templates::Index {};
-    Html(template.render().unwrap_or("Woops something went wrong".to_string()))
+    Html(template.render().unwrap_or_else(|_| "Woops something went wrong".to_string()))
 }
 
 
@@ -55,18 +58,17 @@ async fn get_paste(Path(params): Path<String>) -> Html<String> {
         doc! { "id": params }, None
     ).await.unwrap();
 
-    if paste.is_none() {
-        return Html(
+    match paste {
+        None => Html(
             templates::NotFound {}
             .render()
             .unwrap_or_else(|_| "Woops something went wrong".to_string())
-        )
-    } else {
-        return Html(
-            templates::Paste { paste_content: &paste.unwrap().content.as_str() }
+        ),
+        Some(paste) => Html(
+            templates::Paste { paste_content: paste.content.as_str() }
             .render()
             .unwrap_or_else(|_| "Woops something went wrong".to_string())
-        )
+        ),
     }
 }
 
@@ -105,7 +107,18 @@ async fn run(app: Router<Body>) {
 async fn main() {
     let app: Router<Body> = Router::new()
         .route("/", get(get_root))
-        .route("/upload", post(post_upload))
+        .route("/upload", post(post_upload)
+            .layer(ServiceBuilder::new()
+                .layer(HandleErrorLayer::new(|err| async move {
+                    (
+                        StatusCode::INTERNAL_SERVER_ERROR,
+                        format!("Something went wrong: {}", err),
+                    )
+                }))
+                .layer(BufferLayer::new(1024))
+                .layer(RateLimitLayer::new(1, Duration::from_secs(3)))
+            )
+        )
         .route("/:paste_id", get(get_paste))
         .fallback(get_service(ServeDir::new("./static/"))
         .handle_error(|err| async move {
@@ -116,6 +129,5 @@ async fn main() {
         }));
 
     init_mongo().await.unwrap();
-
     run(app).await;
 }
