@@ -12,9 +12,14 @@ async function main() {
     editor.container.style.lineHeight = 2;
     editor.renderer.updateFontSize();
 
-    if (sessionStorage.getItem("previousContent")) {
-        editor.setValue(sessionStorage.getItem("previousContent"), 1);
-        sessionStorage.removeItem("previousContent");
+    if (sessionStorage.getItem('previousContent')) {
+        editor.setValue(sessionStorage.getItem('previousContent'), 1);
+        sessionStorage.removeItem('previousContent');
+    }
+
+    if (sessionStorage.getItem('previousLanguage')) {
+        editor.setMode('ace/mode/' + language);
+        sessionStorage.removeItem('previousLanguage');
     }
 
     if (window.location.pathname.match(/\/[a-zA-Z0-9]{20}#?.*$/)) {
@@ -37,7 +42,7 @@ async function main() {
     if (editButton) {
         editButton.addEventListener('click', () => {
             const previousContent = editor.getValue();
-            sessionStorage.setItem("previousContent", previousContent);
+            sessionStorage.setItem('previousContent', previousContent);
 
             window.location.href = '/';
         });
@@ -62,9 +67,13 @@ function highlightResult() {
     let language = hljs.highlightAuto(value);
     language = language.language || language.secondBest
 
-    editor.session.setMode(
-        'ace/mode/' + language,
-    );
+    if (language) {
+        editor.session.setMode(
+            'ace/mode/' + language,
+        );
+
+        sessionStorage.setItem('previousLanguage', language)
+    }
 }
 
 async function makePostRequest(value) {
