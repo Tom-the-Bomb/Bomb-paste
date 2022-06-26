@@ -1,11 +1,12 @@
 @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@200&display=swap');
 
 :root {
+    --bgcolor: #44444d;
     --fonts: "JetBrains Mono", "monospace", "sans-serif";
 }
 
 footer {
-    background-color:rgb(44, 41, 41)!important;
+    background-color: rgb(44, 41, 41)!important;
     text-align: center;
     color: rgb(196, 188, 188);
     font-size: 80%;
@@ -17,7 +18,7 @@ footer {
     font-family: var(--fonts);
     width: 100%!important;
     height: 100vh;
-    background-color: #44444d !important;
+    background-color: var(--bgcolor)!important;
     border: none !important;
     outline: none;
     padding-left: 10px;
@@ -34,4 +35,16 @@ footer {
 
 #gh-link:hover {
     text-decoration: underline;
+}
+
+#not-found {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: rgb(233, 197, 197);
+    text-align: center;
+    background-color: var(--bgcolor);
+    width: 100%!important;
+    height: 100vh;
 }

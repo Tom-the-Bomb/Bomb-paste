@@ -39,13 +39,12 @@ async function main() {
 }
 
 function highlightResult() {
-    console.log(1)
     editor.setOptions({
         readOnly: true,
         highlightActiveLine: false,
         highlightGutterLine: false,
     });
-    console.log(2)
+
     let element = document.getElementById('content');
 
     language = hljs.highlightAuto(element.value);
