@@ -132,6 +132,9 @@ async fn main() {
             )
         }));
 
+    println!("[App Initialized]");
     init_mongo().await.unwrap();
+    println!("[Connected to Mongo Database]");
+
     run(app).await;
 }
