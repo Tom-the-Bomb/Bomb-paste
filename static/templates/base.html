@@ -6,13 +6,16 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>{% block title %}Bomb-Paste{% endblock %}</title>
 
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.1.0/styles/default.min.css">
         <link rel="stylesheet" href="../css/styles.css">
 
         <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.1.0/highlight.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.5.3/ace.js"></script>
         <script defer src="../js/index.js"></script>
+
+        <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.slim.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js"></script>
     </head>
     <body>
         <header>
@@ -35,6 +38,9 @@
                         </div>
                         <div>
                             {% block edit_button %} {% endblock %}
+                        </div>
+                        <div>
+                            {% block language_select %} {% endblock %}
                         </div>
                     </div>
                 </div>
