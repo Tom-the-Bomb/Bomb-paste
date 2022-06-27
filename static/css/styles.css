@@ -13,6 +13,10 @@ footer {
     font-family: var(--fonts);
 }
 
+.empty-div {
+    width: 1vw;
+}
+
 #content {
     display: flex;
     font-family: var(--fonts);

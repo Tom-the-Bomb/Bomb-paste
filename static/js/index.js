@@ -45,8 +45,10 @@ async function main() {
         saveButton.addEventListener('click', async () => {
             const value = editor.getValue();
 
-            let result = await makePostRequest(value);
-            window.location.href = '/' + result.id;
+            let id = await makePostRequest(value);
+            if (id !== null) {
+                window.location.href = '/' + id;
+            }
         });
     }
 
@@ -61,6 +63,7 @@ async function main() {
 
     if (newButton) {
         newButton.addEventListener('click', () => {
+            sessionStorage.clear();
             window.location.href = '/';
         });
     }
@@ -108,7 +111,13 @@ async function makePostRequest(value) {
     };
 
     let resp = await fetch('/upload', payload);
-    return await resp.json();
+
+    if (resp.status >= 400) {
+        return null;
+    } else {
+        let json = await resp.json();
+        return json.id;
+    }
 }
 
 main();

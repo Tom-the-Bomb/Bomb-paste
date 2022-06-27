@@ -1,6 +1,12 @@
 {% extends "base.html" %}
 {% block title %}Bomb-Paste - Home{% endblock %}
 
+{% block language_select %}
+<select class="custom-select" id="language-select">
+    <option value="volvo">Test</option>
+</select>
+{% endblock %}
+
 {% block save_button %}
 <button class="btn btn-dark" id="saveButton" title="Save">
     <img src="../assets/save.svg">
@@ -15,10 +21,4 @@
 
 {% block main_content %}
 <div id="content"></div>
-{% endblock %}
-
-{% block language_select %}
-<select class="custom-select" id="language-select">
-    <option value="volvo">Test</option>
-</select>
 {% endblock %}

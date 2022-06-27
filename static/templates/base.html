@@ -28,6 +28,11 @@
                 </button>
                 <div class="collapse navbar-collapse" id="navbar">
                     <div class="navbar-nav">
+                        <div class="empty-div"></div>
+                        <div>
+                            {% block language_select %} {% endblock %}
+                        </div>
+                        <div class="empty-div"></div>
                         <div>
                             <button class="btn btn-dark" id="newButton" title="Create new">
                                 <img src="../assets/new.svg">
@@ -38,9 +43,6 @@
                         </div>
                         <div>
                             {% block edit_button %} {% endblock %}
-                        </div>
-                        <div>
-                            {% block language_select %} {% endblock %}
                         </div>
                     </div>
                 </div>
