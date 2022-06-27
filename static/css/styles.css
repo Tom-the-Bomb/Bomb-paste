@@ -13,10 +13,6 @@ footer {
     font-family: var(--fonts);
 }
 
-.empty-div {
-    width: 1vw;
-}
-
 #content {
     display: flex;
     font-family: var(--fonts);
@@ -70,4 +66,8 @@ footer {
     color: white;
     outline: none!important;
     border: none!important;
+}
+
+#nav-right-element {
+    margin-right: 2vh!important;
 }
