@@ -64,6 +64,15 @@ async function main() {
             window.location.href = '/';
         });
     }
+
+    if (document.addEventListener) {
+        document.addEventListener('keydown', (event) => {
+            if ((event.key.toLowerCase() === 's' || event.keyCode === 83) && (event.metaKey || event.ctrlKey)) {
+                event.preventDefault();
+                saveButton.click();
+            }
+        }, false)
+    }
 }
 
 function highlightResult() {
