@@ -1,32 +1,40 @@
-var editor = ace.edit('content');
+try {
+    var hasEditor = true;
+    var editor = ace.edit('content');
+} catch {
+    var hasEditor = false;
+}
 
 async function main() {
-    editor.setTheme('ace/theme/dracula');
-    editor.setShowPrintMargin(false);
 
-    editor.setBehavioursEnabled(true);
-    editor.session.setOptions({
-        tabSize: 4,
-        useSoftTabs: true,
-    });
+    if (hasEditor) {
+        editor.setTheme('ace/theme/dracula');
+        editor.setShowPrintMargin(false);
 
-    editor.container.style.lineHeight = 2;
-    editor.renderer.updateFontSize();
+        editor.setBehavioursEnabled(true);
+        editor.session.setOptions({
+            tabSize: 4,
+            useSoftTabs: true,
+        });
 
-    if (sessionStorage.getItem('previousContent')) {
-        editor.setValue(sessionStorage.getItem('previousContent'), 1);
-        sessionStorage.removeItem('previousContent');
-    }
+        editor.container.style.lineHeight = 2;
+        editor.renderer.updateFontSize();
 
-    if (sessionStorage.getItem('previousLanguage')) {
-        editor.session.setMode(
-            'ace/mode/' + sessionStorage.getItem('previousLanguage'),
-        );
-        sessionStorage.removeItem('previousLanguage');
-    }
+        if (sessionStorage.getItem('previousContent')) {
+            editor.setValue(sessionStorage.getItem('previousContent'), 1);
+            sessionStorage.removeItem('previousContent');
+        }
 
-    if (window.location.pathname.match(/\/[a-zA-Z0-9]{20}#?.*$/)) {
-        highlightResult();
+        if (sessionStorage.getItem('previousLanguage')) {
+            editor.session.setMode(
+                'ace/mode/' + sessionStorage.getItem('previousLanguage'),
+            );
+            sessionStorage.removeItem('previousLanguage');
+        }
+
+        if (window.location.pathname.match(/\/[a-zA-Z0-9]{20}#?.*$/)) {
+            highlightResult();
+        }
     }
 
     let saveButton = document.getElementById('saveButton');

@@ -39,6 +39,7 @@ footer {
 
 #not-found {
     display: flex;
+    position: absolute;
     flex-direction: column;
     align-items: center;
     justify-content: center;
