@@ -1,7 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@200&display=swap');
 
 :root {
-    --bgcolor: #44444d;
+    --bgcolor: rgb(68, 68, 84);
     --fonts: "JetBrains Mono", "monospace", "sans-serif";
 }
 

@@ -2,6 +2,7 @@ var editor = ace.edit('content');
 
 async function main() {
     editor.setTheme('ace/theme/dracula');
+    editor.setShowPrintMargin(false);
 
     editor.setBehavioursEnabled(true);
     editor.session.setOptions({
