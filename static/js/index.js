@@ -18,7 +18,7 @@ async function main() {
     }
 
     if (sessionStorage.getItem('previousLanguage')) {
-        editor.setMode(
+        editor.session.setMode(
             'ace/mode/' + sessionStorage.getItem('previousLanguage'),
         );
         sessionStorage.removeItem('previousLanguage');
