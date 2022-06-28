@@ -12,6 +12,7 @@
 
         <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.1.0/highlight.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.5.3/ace.js"></script>
+        <script src="../js/languages.js"></script>
         <script defer src="../js/index.js"></script>
 
         <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.slim.min.js"></script>
@@ -40,7 +41,9 @@
                             {% block edit_button %} {% endblock %}
                         </div>
                         <div>
-                            {% block language_select %} {% endblock %}
+                            {% block language_select %}
+                            <div id="language-select-div"></div>
+                            {% endblock %}
                         </div>
                     </div>
                 </div>

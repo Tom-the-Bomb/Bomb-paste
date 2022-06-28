@@ -37,6 +37,8 @@ async function main() {
         }
     }
 
+    addLanguagesSelect();
+
     let saveButton = document.getElementById('saveButton');
     let editButton = document.getElementById('editButton');
     let newButton = document.getElementById('newButton')
@@ -75,6 +77,22 @@ async function main() {
                 saveButton.click();
             }
         }, false)
+    }
+}
+
+function addLanguagesSelect() {
+    let selectDiv = document.getElementById('language-select-div');
+
+    if (selectDiv) {
+        let innerHTML = '<select class="custom-select" id="language-select">\n';
+
+        for (let lang in supportedAceLanguages) {
+            lang = supportedAceLanguages[lang];
+            innerHTML += `<option value="${lang.ace}">${lang.name}</option>\n`
+        }
+        innerHTML += '</select>'
+
+        selectDiv.innerHTML = innerHTML;
     }
 }
 
