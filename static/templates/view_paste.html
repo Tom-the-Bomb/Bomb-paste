@@ -2,13 +2,13 @@
 {% block title %}Bomb-Paste - paste{% endblock %}
 
 {% block save_button %}
-<button class="btn btn-dark" id="saveButton" title="Save" disabled>
+<button data-toggle="tooltip" class="btn btn-dark" id="saveButton" title="Save (Ctrl+S)" disabled>
     <img src="../assets/save.svg">
 </button>
 {% endblock %}
 
 {% block edit_button %}
-<button class='btn btn-dark' id="editButton" title="Clone & Edit">
+<button data-toggle="tooltip" class='btn btn-dark' id="editButton" title="Clone & Edit">
     <img src="../assets/edit.svg">
 </button>
 {% endblock %}

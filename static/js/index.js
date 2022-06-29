@@ -91,6 +91,10 @@ async function main() {
             }
         }, false)
     }
+
+    $(function () {
+        $('[data-toggle="tooltip"]').tooltip();
+    })
 }
 
 function getClosestAceLanguage(query, more=true) {

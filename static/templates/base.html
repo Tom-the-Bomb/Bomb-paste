@@ -30,7 +30,12 @@
                 <div class="collapse navbar-collapse" id="navbar">
                     <div class="navbar-nav">
                         <div>
-                            <button class="btn btn-dark" id="newButton" title="Create new">
+                            <button class="btn btn-dark" id="info-icon" data-toggle="tooltip" title="Help">
+                                <img src="../assets/question.svg">
+                            </button>
+                        </div>
+                        <div>
+                            <button class="btn btn-dark" id="newButton" data-toggle="tooltip" title="Create new">
                                 <img src="../assets/new.svg">
                             </button>
                         </div>
@@ -42,7 +47,7 @@
                         </div>
                         <div>
                             {% block language_select %}
-                            <div id="language-select-div"></div>
+                            <div id="language-select-div" data-toggle="tooltip" title="Select a language"></div>
                             {% endblock %}
                         </div>
                     </div>
