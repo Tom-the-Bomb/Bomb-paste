@@ -33,8 +33,8 @@ async function main() {
 
         let paste_route = window.location.pathname.match(/\/([a-zA-Z0-9]{20})(\.([^#]+))?(#?\S*)$/);
         if (paste_route) {
-            let language = getClosestAceLanguage(paste_route[3]);
-            highlightResult(language, more=false);
+            let language = getClosestAceLanguage(paste_route[3], more=false);
+            highlightResult(language);
         }
     }
 
@@ -136,7 +136,7 @@ function addLanguagesSelect() {
 
         for (let lang in supportedAceLanguages) {
             lang = supportedAceLanguages[lang];
-            const langName =  lang.name.replace('_', '-');
+            const langName = lang.name.replace('_', '-');
 
             if (lang.mode === currLang) {
                 innerHTML += `<option value="${lang.mode}" selected>${langName}</option>\n`;
