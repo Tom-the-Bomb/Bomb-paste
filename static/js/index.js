@@ -194,6 +194,7 @@ async function makePostRequest(value) {
     if (resp.ok) {
         return await resp.json();
     } else {
+        alert('Paste content cannot be blank!')
         return null;
     }
 }
