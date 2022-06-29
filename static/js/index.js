@@ -33,7 +33,8 @@ async function main() {
 
         let paste_route = window.location.pathname.match(/\/([a-zA-Z0-9]{20})(\.([^#]+))?(#?\S*)$/);
         if (paste_route) {
-            highlightResult(paste_route[3]);
+            let language = getClosestAceLanguage(paste_route[3]);
+            highlightResult(language, more=false);
         }
     }
 
@@ -92,6 +93,35 @@ async function main() {
     }
 }
 
+function getClosestAceLanguage(query, more=true) {
+
+    if (query) {
+        query = query.toLowerCase();
+
+        if (query in supportedAceLanguages) {
+            return query;
+        }
+
+        for (let lang in supportedAceLanguages) {
+            langInfo = supportedAceLanguages[lang];
+
+            let file_extensions = langInfo.extensions.split('|');
+
+            if (more) {
+                var condition = file_extensions.includes(query) || lang.includes(query) || langInfo.caption.includes(query);
+            } else {
+                var condition = file_extensions.includes(query);
+            }
+
+            if (condition) {
+                return lang;
+            }
+        }
+    }
+
+    return query;
+}
+
 function addLanguagesSelect() {
     let selectDiv = document.getElementById('language-select-div');
 
@@ -135,6 +165,7 @@ function highlightResult(language=null) {
         if (!language) {
             language = hljs.highlightAuto(value);
             language = language.language || language.secondBest.language || 'text';
+            language = getClosestAceLanguage(language);
         }
 
         const isValidLang = language.toLowerCase() in supportedAceLanguages;
