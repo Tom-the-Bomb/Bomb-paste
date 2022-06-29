@@ -12,7 +12,7 @@ pub struct Config {
 
 
 #[derive(Deserialize)]
-pub struct FormPayload {
+pub struct UploadPayload {
     pub content: String,
 }
 

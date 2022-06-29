@@ -34,16 +34,20 @@ use tower_http::services::ServeDir;
 static COLLECTION: OnceLock<Collection<models::PasteModel>> = OnceLock::new();
 
 
-async fn post_upload(Json(payload): Json<models::FormPayload>) -> impl IntoResponse {
+async fn post_upload(Json(payload): Json<models::UploadPayload>) -> impl IntoResponse {
     if payload.content.len() > 0 {
         let id = helpers::generate_id(20);
         let collection = COLLECTION.get().unwrap();
 
         collection.insert_one(
-            models::PasteModel { id: id.clone(), content: payload.content}, None
+            models::PasteModel {
+                id: id.clone(),
+                content: payload.content,
+            },
+            None,
         ).await.unwrap();
 
-        Json(models::PasteJsonResponse { id: id }).into_response()
+        Json(models::PasteJsonResponse { id }).into_response()
     } else {
         StatusCode::BAD_REQUEST.into_response()
     }
@@ -57,9 +61,13 @@ async fn get_root() -> Html<String> {
 
 
 async fn get_paste(Path(params): Path<String>) -> Html<String> {
+
+    let mut parts = params.split(".");
+    let paste_id = parts.next().unwrap_or("not found");
+
     let collection = COLLECTION.get().unwrap();
     let paste = collection.find_one(
-        doc! { "id": params }, None
+        doc! { "id": paste_id }, None
     ).await.unwrap();
 
     match paste {

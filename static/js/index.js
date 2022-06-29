@@ -27,13 +27,13 @@ async function main() {
 
         if (sessionStorage.getItem('previousLanguage')) {
             editor.session.setMode(
-                'ace/mode/' + sessionStorage.getItem('previousLanguage'),
+                sessionStorage.getItem('previousLanguage'),
             );
-            sessionStorage.removeItem('previousLanguage');
         }
 
-        if (window.location.pathname.match(/\/[a-zA-Z0-9]{20}#?.*$/)) {
-            highlightResult();
+        let paste_route = window.location.pathname.match(/\/([a-zA-Z0-9]{20})(\.([^#]+))?(#?\S*)$/);
+        if (paste_route) {
+            highlightResult(paste_route[3]);
         }
     }
 
@@ -41,15 +41,16 @@ async function main() {
 
     let saveButton = document.getElementById('saveButton');
     let editButton = document.getElementById('editButton');
-    let newButton = document.getElementById('newButton')
+    let newButton = document.getElementById('newButton');
+    let languagesSelect = document.getElementById('language-select');
 
     if (saveButton) {
         saveButton.addEventListener('click', async () => {
             const value = editor.getValue();
 
-            let id = await makePostRequest(value);
-            if (id !== null) {
-                window.location.href = '/' + id;
+            let json = await makePostRequest(value);
+            if (json !== null) {
+                window.location.href = '/' + json.id;
             }
         });
     }
@@ -70,6 +71,17 @@ async function main() {
         });
     }
 
+    if (languagesSelect) {
+        languagesSelect.addEventListener('change', () => {
+            let selected = languagesSelect.options[languagesSelect.selectedIndex];
+
+            if (hasEditor) {
+                editor.session.setMode(selected.value);
+            }
+            sessionStorage.setItem('previousLanguage', selected.value)
+        });
+    }
+
     if (document.addEventListener) {
         document.addEventListener('keydown', (event) => {
             if ((event.key.toLowerCase() === 's' || event.keyCode === 83) && (event.metaKey || event.ctrlKey)) {
@@ -84,19 +96,31 @@ function addLanguagesSelect() {
     let selectDiv = document.getElementById('language-select-div');
 
     if (selectDiv) {
+        if (hasEditor) {
+            var currLang = sessionStorage.getItem('previousLanguage') || editor.session.getMode().$id;
+        } else {
+            var currLang = sessionStorage.getItem('previousLanguage');
+        }
+
         let innerHTML = '<select class="custom-select" id="language-select">\n';
 
         for (let lang in supportedAceLanguages) {
             lang = supportedAceLanguages[lang];
-            innerHTML += `<option value="${lang.ace}">${lang.name}</option>\n`
+            const langName =  lang.name.replace('_', '-');
+
+            if (lang.mode === currLang) {
+                innerHTML += `<option value="${lang.mode}" selected>${langName}</option>\n`;
+            } else {
+                innerHTML += `<option value="${lang.mode}">${langName}</option>\n`;
+            }
         }
-        innerHTML += '</select>'
+        innerHTML += '</select>';
 
         selectDiv.innerHTML = innerHTML;
     }
 }
 
-function highlightResult() {
+function highlightResult(language=null) {
     editor.setOptions({
         readOnly: true,
         highlightActiveLine: false,
@@ -105,16 +129,22 @@ function highlightResult() {
 
     let value = editor.getValue();
 
-    let language = hljs.highlightAuto(value);
-    language = language.language || language.secondBest
+    if (sessionStorage.getItem('previousLanguage')) {
+        language = sessionStorage.getItem('previousLanguage');
+    } else {
+        if (!language) {
+            language = hljs.highlightAuto(value);
+            language = language.language || language.secondBest.language || 'text';
+        }
 
-    if (language) {
-        editor.session.setMode(
-            'ace/mode/' + language,
-        );
+        const isValidLang = language.toLowerCase() in supportedAceLanguages;
+        language = 'ace/mode/' + language.toLowerCase();
 
-        sessionStorage.setItem('previousLanguage', language)
+        if (isValidLang) {
+            sessionStorage.setItem("previousLanguage", language)
+        }
     }
+    editor.session.setMode(language);
 }
 
 async function makePostRequest(value) {
@@ -130,11 +160,10 @@ async function makePostRequest(value) {
 
     let resp = await fetch('/upload', payload);
 
-    if (resp.status >= 400) {
-        return null;
+    if (resp.ok) {
+        return await resp.json();
     } else {
-        let json = await resp.json();
-        return json.id;
+        return null;
     }
 }
 
