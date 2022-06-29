@@ -79,7 +79,7 @@ async function main() {
             if (hasEditor) {
                 editor.session.setMode(selected.value);
             }
-            sessionStorage.setItem('previousLanguage', selected.value)
+            sessionStorage.setItem('previousLanguage', selected.value);
         });
     }
 
@@ -172,7 +172,7 @@ function highlightResult(language=null) {
         language = 'ace/mode/' + language.toLowerCase();
 
         if (isValidLang) {
-            sessionStorage.setItem("previousLanguage", language)
+            sessionStorage.setItem("previousLanguage", language);
         }
     }
     editor.session.setMode(language);
@@ -194,7 +194,7 @@ async function makePostRequest(value) {
     if (resp.ok) {
         return await resp.json();
     } else {
-        alert('Paste content cannot be blank!')
+        alert('Paste content cannot be blank!');
         return null;
     }
 }
