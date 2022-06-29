@@ -43,6 +43,7 @@ async function main() {
     let saveButton = document.getElementById('saveButton');
     let editButton = document.getElementById('editButton');
     let newButton = document.getElementById('newButton');
+    let copyButton = document.getElementById('copyButton');
     let languagesSelect = document.getElementById('language-select');
 
     if (saveButton) {
@@ -69,6 +70,14 @@ async function main() {
         newButton.addEventListener('click', () => {
             sessionStorage.clear();
             window.location.href = '/';
+        });
+    }
+
+    if (copyButton) {
+        copyButton.addEventListener('click', () => {
+            let path = window.location.href;
+            navigator.clipboard.writeText(path);
+            alert('Copied URL to clipboard!');
         });
     }
 
@@ -176,7 +185,7 @@ function highlightResult(language=null) {
         language = 'ace/mode/' + language.toLowerCase();
 
         if (isValidLang) {
-            sessionStorage.setItem("previousLanguage", language);
+            sessionStorage.setItem('previousLanguage', language);
         }
     }
     editor.session.setMode(language);
