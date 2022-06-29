@@ -129,7 +129,7 @@ function highlightResult(language=null) {
 
     let value = editor.getValue();
 
-    if (sessionStorage.getItem('previousLanguage')) {
+    if (sessionStorage.getItem('previousLanguage') && !language) {
         language = sessionStorage.getItem('previousLanguage');
     } else {
         if (!language) {
