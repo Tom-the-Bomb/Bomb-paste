@@ -14,7 +14,7 @@ pub fn generate_id(length: usize) -> String {
 }
 
 pub fn get_config() -> Config {
-    let config_fp = fs::read_to_string("config.toml")
+    let config_fp = fs::read_to_string(".../config.toml")
         .expect("Config could not be loaded");
 
     from_str(config_fp.as_str()).unwrap()
