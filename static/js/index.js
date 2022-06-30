@@ -34,7 +34,7 @@ async function main() {
         let paste_route = window.location.pathname.match(/\/([a-zA-Z0-9]{20})(\.([^#]+))?(#?\S*)$/);
         if (paste_route) {
             let language = getClosestAceLanguage(paste_route[3], more=false);
-            highlightResult(language);
+            highlightResult(editor.getValue(), language);
         }
     }
 
@@ -52,7 +52,8 @@ async function main() {
 
             let json = await makePostRequest(value);
             if (json !== null) {
-                window.location.href = '/' + json.id;
+                language = highlightResult(value, apply=false);
+                window.location.href = `/${json.id}.${language}`;
             }
         });
     }
@@ -163,17 +164,20 @@ function addLanguagesSelect() {
     }
 }
 
-function highlightResult(language=null) {
-    editor.setOptions({
-        readOnly: true,
-        highlightActiveLine: false,
-        highlightGutterLine: false,
-    });
+function highlightResult(value, language=null, apply=true) {
+    let resultLanguage = 'txt';
 
-    let value = editor.getValue();
+    if (apply) {
+        editor.setOptions({
+            readOnly: true,
+            highlightActiveLine: false,
+            highlightGutterLine: false,
+        });
+    }
 
     if (sessionStorage.getItem('previousLanguage') && !language) {
         language = sessionStorage.getItem('previousLanguage');
+        resultLanguage = language.replace('ace/mode/', '');
     } else {
         if (!language) {
             language = hljs.highlightAuto(value);
@@ -182,13 +186,23 @@ function highlightResult(language=null) {
         }
 
         const isValidLang = language.toLowerCase() in supportedAceLanguages;
+
+        if (isValidLang) {
+            resultLanguage = language;
+        }
+
         language = 'ace/mode/' + language.toLowerCase();
 
         if (isValidLang) {
             sessionStorage.setItem('previousLanguage', language);
         }
     }
-    editor.session.setMode(language);
+
+    if (apply) {
+        editor.session.setMode(language);
+    }
+
+    return resultLanguage;
 }
 
 async function makePostRequest(value) {
