@@ -1,8 +1,8 @@
 FROM rustlang/rust:nightly
 
-WORKDIR /
+WORKDIR /app
 COPY . .
 
 RUN cargo build --release
 
-CMD ./target/release/rocket
+CMD ./target/release/bomb-paste
