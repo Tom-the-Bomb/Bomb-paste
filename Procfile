@@ -1,1 +1,1 @@
-web: BOMB_PASTE_PORT=$PORT BOMB_PASTE_KEEP_ALIVE=0 ./target/debug/bomb-paste
+web: cargo run
