@@ -21,7 +21,7 @@
             </th>
             <td><b>Save button</b> - Saves the current actively edited paste
                 redirects them to <code>/:paste_id.&lt;language&gt;</code>
-                Also can be activated via shortcut: <code>Ctrl + S</code>.
+                Also can be activated via shortcut: <kbd>Ctrl + S</kbd>
                 (Only enabled when the user is on root and editing a paste)
                 <br><br>
                 <b>💡 Note:</b> You can also modify the url yourself directly to change the
@@ -45,6 +45,28 @@
             </th>
             <td><b>Copy Button</b> - Copies the URL of the current Paste to clipboard
                 simply for ease of sharing. (Only enabled when the user is viewing a paste)
+            </td>
+        </tr>
+        <tr>
+            <th scope="row">
+                <b>API Usage</b>
+            </th>
+            <td>
+                <h5><code><b>GET</b> /upload</code></h5><br>
+                Simply uploads a paste,
+                accepts JSON with a content field specifying the paste content
+                and returns JSON with an id field specifying the paste ID.
+                The <u>save</u> button also just calls this endpoint internally.<br><br>
+                <b>Limits:</b>&nbsp;&nbsp;<code>content</code> length must be between
+                <code>{{ min_content_length }}</code> and <code>{{ max_content_length }}</code> characters.<br>
+                <b>Example Response:</b>&nbsp;&nbsp;<code>{"id": "gEDjNieoN3LsFCWTJIEc"}</code><br>
+                <b>Example Payload:</b>
+                <pre style="color: rgb(189, 178, 178)"><code>
+GET /upload
+Content-Type: application/json
+body: {
+    "content": "print('hello world')"
+}</code></pre>
             </td>
         </tr>
         <tr>

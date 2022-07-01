@@ -82,7 +82,10 @@ async fn get_root() -> Html<String> {
 
 
 async fn get_help() -> Html<String> {
-    let template = templates::Help {};
+    let template = templates::Help {
+        min_content_length: MIN_PASTE_LENGTH,
+        max_content_length: MAX_PASTE_LENGTH,
+    };
     Html(template.render()
         .unwrap_or_else(|_| "<h1>Woops something went wrong</h1>".to_string())
     )

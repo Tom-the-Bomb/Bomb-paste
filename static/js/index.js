@@ -228,8 +228,8 @@ async function makePostRequest(value) {
     if (resp.ok) {
         return await resp.json();
     } else {
-        if (resp.status === 400 ){
-            alert('Paste content cannot be blank!');
+        if ([400, 413, 500].includes(resp.status)){
+            alert(await resp.text());
         } else {
             alert(`${resp.status}: Something went wrong :(`);
         }

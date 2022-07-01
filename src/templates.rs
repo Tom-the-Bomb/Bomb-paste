@@ -8,7 +8,10 @@ pub struct Index {}
 
 #[derive(Template)]
 #[template(path = "help.html")]
-pub struct Help {}
+pub struct Help {
+    pub min_content_length: usize,
+    pub max_content_length: usize,
+}
 
 
 #[derive(Template)]
