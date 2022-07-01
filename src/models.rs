@@ -8,6 +8,7 @@ pub struct Config {
     pub mongo_cluster: String,
     pub database_name: String,
     pub collection_name: String,
+    pub port: String,
 }
 
 

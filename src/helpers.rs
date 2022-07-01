@@ -13,21 +13,21 @@ pub fn generate_id(length: usize) -> String {
         .collect::<String>()
 }
 
+fn var(name: &'static str) -> Result<String, &'static str> {
+    env::var(name)
+        .map_err(|_| "ENV vars could not be loaded")
+}
+
 pub fn get_config() -> Result<Config, &'static str> {
     drop(dotenv());
 
-    const ERR_MSG: &str = "ENV vars could not be loaded";
     let config = Config {
-        mongo_username: env::var("MONGO_USERNAME")
-            .map_err(|_| ERR_MSG)?,
-        mongo_password: env::var("MONGO_PASSWORD")
-            .map_err(|_| ERR_MSG)?,
-        mongo_cluster: env::var("MONGO_CLUSTER")
-            .map_err(|_| ERR_MSG)?,
-        database_name: env::var("DATABASE_NAME")
-            .map_err(|_| ERR_MSG)?,
-        collection_name: env::var("COLLECTION_NAME")
-            .map_err(|_| ERR_MSG)?,
+        mongo_username: var("MONGO_USERNAME")?,
+        mongo_password: var("MONGO_PASSWORD")?,
+        mongo_cluster: var("MONGO_CLUSTER")?,
+        database_name: var("DATABASE_NAME")?,
+        collection_name: var("COLLECTION_NAME")?,
+        port: var("PORT")?,
     };
 
     Ok(config)

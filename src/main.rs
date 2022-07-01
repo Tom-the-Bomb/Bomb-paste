@@ -85,8 +85,7 @@ async fn get_paste(Path(params): Path<String>) -> Html<String> {
 }
 
 
-async fn init_mongo() -> mongodb::error::Result<()> {
-    let config = helpers::get_config().unwrap();
+async fn init_mongo(config: &models::Config) -> mongodb::error::Result<()> {
     let mongo_url = format!(
         "mongodb+srv://{}:{}@{}.efj2q.mongodb.net/?retryWrites=true&w=majority",
         config.mongo_username, config.mongo_password, config.mongo_cluster,
@@ -101,8 +100,8 @@ async fn init_mongo() -> mongodb::error::Result<()> {
 }
 
 
-async fn run(app: Router<Body>) {
-    let addr = SocketAddr::from(([0, 0, 0, 0], 8030));
+async fn run(app: Router<Body>, port: u16) {
+    let addr = SocketAddr::from(([0, 0, 0, 0], port));
     let server = axum::Server::bind(&addr)
         .serve(app.into_make_service())
         .with_graceful_shutdown(async {
@@ -118,6 +117,7 @@ async fn run(app: Router<Body>) {
 
 #[tokio::main]
 async fn main() {
+    let config = helpers::get_config().unwrap();
     let app: Router<Body> = Router::new()
         .route("/", get(get_root))
         .route("/upload", post(post_upload)
@@ -142,8 +142,9 @@ async fn main() {
         }));
 
     println!("[App Initialized]");
-    init_mongo().await.unwrap();
+    init_mongo(&config).await.unwrap();
     println!("[Connected to Mongo Database]");
 
-    run(app).await;
+    let port = config.port.parse::<u16>().unwrap();
+    run(app, port).await;
 }
