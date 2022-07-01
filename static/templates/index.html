@@ -1,6 +1,11 @@
 {% extends "base.html" %}
 {% block title %}Bomb-Paste - Home{% endblock %}
 
+{% block additional_meta %}
+<meta name="description" content="Bomb-Paste - Home">
+<meta property="og:image" content="../assets/rooSee.png">
+{% endblock %}
+
 {% block save_button %}
 <button data-toggle="tooltip" class="btn btn-dark" id="saveButton" title="Save (Ctrl+S)">
     <img src="../assets/save.svg">

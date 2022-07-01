@@ -59,6 +59,10 @@ async fn get_root() -> Html<String> {
     Html(template.render().unwrap_or_else(|_| "Woops something went wrong".to_string()))
 }
 
+async fn get_help() -> Html<String> {
+    let template = templates::Help {};
+    Html(template.render().unwrap_or_else(|_| "Woops something went wrong".to_string()))
+}
 
 async fn get_paste(Path(params): Path<String>) -> Html<String> {
 
@@ -120,6 +124,7 @@ async fn main() {
     let config = helpers::get_config().unwrap();
     let app: Router<Body> = Router::new()
         .route("/", get(get_root))
+        .route("/help", get(get_help))
         .route("/upload", post(post_upload)
             .layer(ServiceBuilder::new()
                 .layer(HandleErrorLayer::new(|err| async move {

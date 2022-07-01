@@ -1,7 +1,84 @@
 {% extends "base.html" %}
 {% block title %}BombPaste - Help{% endblock %}
 {% block main_content %}
-<!-- TODO -->
+<div id="help-main-content">
+    <table class="table table-responsive" id="help-table">
+        <tr>
+            <th scope="row">
+                <img src="../assets/question.svg">
+            </th>
+            <td><b>Help button</b> - redirects the user to this page, which shows help information.</td>
+        </tr>
+        <tr>
+            <th scope="row">
+                <img src="../assets/new.svg">
+            </th>
+            <td><b>New button</b> - redirects the user to the root (index) page, allowing for them to create a new paste</td>
+        </tr>
+        <tr>
+            <th scope="row">
+                <img src="../assets/save.svg">
+            </th>
+            <td><b>Save button</b> - Saves the current actively edited paste
+                redirects them to <code>/:paste_id.&lt;language&gt;</code>
+                Also can be activated via shortcut: <code>Ctrl + S</code>.
+                (Only enabled when the user is on root and editing a paste)
+                <br><br>
+                <b>💡 Note:</b> You can also modify the url yourself directly to change the
+                language of the paste (for sharing) e.g. <code>/:paste_id.js</code>,
+                or use the language select menu.
+            </td>
+        </tr>
+        <tr>
+            <th scope="row">
+                <img src="../assets/edit.svg">
+            </th>
+            <td><b>Clone & Edit button</b> - Pastes are not editable once saved
+                this button simply redirects the user to root allowing them to make a new paste
+                and filling in the content and language fields from the previous paste.
+                (Only enabled when the user is viewing a paste)
+            </td>
+        </tr>
+        <tr>
+            <th scope="row">
+                <img src="../assets/copy.svg">
+            </th>
+            <td><b>Copy Button</b> - Copies the URL of the current Paste to clipboard
+                simply for ease of sharing. (Only enabled when the user is viewing a paste)
+            </td>
+        </tr>
+        <tr>
+            <th scope="row">
+                <b>Useful Links</b>
+            </th>
+            <td>
+                <ul>
+                    <li>
+                        <a class="useful-link" href="https://github.com/Tom-the-Bomb/Bomb-paste" target="_blank">
+                            Github Repository</a> Please leave a ⭐!
+                    </li>
+                    <li>
+                        Found a bug? Make an <a class="useful-link" href="https://github.com/Tom-the-Bomb/Bomb-paste/issues/new" target="_blank">
+                            issue</a> PRs also are all welcome!
+                    </li>
+                    <li>
+                        <a class="useful-link" href="https://github.com/Tom-the-Bomb" target="_blank">
+                            My Github profile</a>
+                    </li>
+                    <li>
+                        Find me over on <a class="useful-link" href="https://discord.com/users/522524473447153695" target="_blank">
+                            Discord</a>
+                    </li>
+                </ul>
+            </td>
+        </tr>
+    </table>
+</div>
+{% endblock %}
+
+{% block additional_meta %}
+<meta name="description" content="Bomb-Paste - Help">
+<meta property="og:image" content="../assets/rooLurk.png">
 {% endblock %}
 
 {% block language_select %}

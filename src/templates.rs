@@ -7,6 +7,11 @@ pub struct Index {}
 
 
 #[derive(Template)]
+#[template(path = "help.html")]
+pub struct Help {}
+
+
+#[derive(Template)]
 #[template(path = "notfound.html")]
 pub struct NotFound {}
 

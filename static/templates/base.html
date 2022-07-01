@@ -5,6 +5,8 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>{% block title %}Bomb-Paste{% endblock %}</title>
+        <link rel="icon" href="../assets/rooSee.png" type="image/x-icon">
+        {% block additional_meta %} {% endblock %}
 
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.1.0/styles/default.min.css">
@@ -30,7 +32,7 @@
                 <div class="collapse navbar-collapse" id="navbar">
                     <div class="navbar-nav">
                         <div>
-                            <button class="btn btn-dark" id="info-icon" data-toggle="tooltip" title="Help">
+                            <button class="btn btn-dark" id="helpButton" data-toggle="tooltip" title="Help">
                                 <img src="../assets/question.svg">
                             </button>
                         </div>

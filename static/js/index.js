@@ -40,11 +40,18 @@ async function main() {
 
     addLanguagesSelect();
 
+    let helpButton = document.getElementById('helpButton');
     let saveButton = document.getElementById('saveButton');
     let editButton = document.getElementById('editButton');
     let newButton = document.getElementById('newButton');
     let copyButton = document.getElementById('copyButton');
     let languagesSelect = document.getElementById('language-select');
+
+    if (helpButton) {
+        helpButton.addEventListener('click', () => {
+            window.location.href = '/help';
+        })
+    }
 
     if (saveButton) {
         saveButton.addEventListener('click', async () => {
@@ -221,7 +228,12 @@ async function makePostRequest(value) {
     if (resp.ok) {
         return await resp.json();
     } else {
-        alert('Paste content cannot be blank!');
+        if (resp.status === 400 ){
+            alert('Paste content cannot be blank!');
+        } else {
+            alert(`${resp.status}: Something went wrong :(`);
+        }
+
         return null;
     }
 }
