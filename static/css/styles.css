@@ -15,7 +15,11 @@ footer {
 }
 
 .useful-link {
-    color:rgb(115, 165, 212)
+    color:rgb(115, 165, 212);
+}
+
+.useful-link:hover {
+    color:rgb(115, 165, 212);
 }
 
 #content {
