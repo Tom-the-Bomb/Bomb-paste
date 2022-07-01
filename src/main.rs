@@ -33,58 +33,92 @@ use tower_http::services::ServeDir;
 
 static COLLECTION: OnceLock<Collection<models::PasteModel>> = OnceLock::new();
 
+const MIN_PASTE_LENGTH: usize = 0;
+const MAX_PASTE_LENGTH: usize = 500_000;
+
 
 async fn post_upload(Json(payload): Json<models::UploadPayload>) -> impl IntoResponse {
-    if payload.content.len() > 0 {
-        let id = helpers::generate_id(20);
-        let collection = COLLECTION.get().unwrap();
+    if payload.content.len() > MIN_PASTE_LENGTH {
 
-        collection.insert_one(
-            models::PasteModel {
-                id: id.clone(),
-                content: payload.content,
-            },
-            None,
-        ).await.unwrap();
+        if payload.content.len() > MAX_PASTE_LENGTH {
+            (
+                StatusCode::PAYLOAD_TOO_LARGE,
+                format!("Paste content cannot be over {MAX_PASTE_LENGTH} characters."),
+            ).into_response()
+        } else {
+            let id = helpers::generate_id(20);
+            let collection = COLLECTION.get().unwrap();
 
-        Json(models::PasteJsonResponse { id }).into_response()
+            match collection.insert_one(
+                models::PasteModel {
+                    id: id.clone(),
+                    content: payload.content,
+                },
+                None,
+            ).await {
+                Ok(_) => Json(models::PasteJsonResponse { id }).into_response(),
+                Err(_) => (
+                    StatusCode::INTERNAL_SERVER_ERROR,
+                    "Something went wrong when updating the DB.",
+                ).into_response(),
+            }
+        }
+
     } else {
-        StatusCode::BAD_REQUEST.into_response()
+        (
+            StatusCode::BAD_REQUEST,
+            format!("Paste content must be at least {MIN_PASTE_LENGTH} characters in length."),
+        ).into_response()
     }
 }
 
 
 async fn get_root() -> Html<String> {
     let template = templates::Index {};
-    Html(template.render().unwrap_or_else(|_| "Woops something went wrong".to_string()))
+    Html(template.render()
+        .unwrap_or_else(|_| "<h1>Woops something went wrong</h1>".to_string())
+    )
 }
+
 
 async fn get_help() -> Html<String> {
     let template = templates::Help {};
-    Html(template.render().unwrap_or_else(|_| "Woops something went wrong".to_string()))
+    Html(template.render()
+        .unwrap_or_else(|_| "<h1>Woops something went wrong</h1>".to_string())
+    )
 }
 
-async fn get_paste(Path(params): Path<String>) -> Html<String> {
+
+async fn get_paste(Path(params): Path<String>) -> impl IntoResponse {
 
     let mut parts = params.split(".");
     let paste_id = parts.next().unwrap_or("not found");
 
     let collection = COLLECTION.get().unwrap();
-    let paste = collection.find_one(
+    let paste_result = collection.find_one(
         doc! { "id": paste_id }, None
-    ).await.unwrap();
+    ).await;
 
-    match paste {
-        None => Html(
-            templates::NotFound {}
-            .render()
-            .unwrap_or_else(|_| "Woops something went wrong".to_string())
-        ),
-        Some(paste) => Html(
-            templates::Paste { paste_content: paste.content.as_str() }
-            .render()
-            .unwrap_or_else(|_| "Woops something went wrong".to_string())
-        ),
+    match paste_result {
+        Ok(paste) => {
+            let html_response: Html<String> = match paste {
+                None => Html(
+                    templates::NotFound {}
+                    .render()
+                    .unwrap_or_else(|_| "<h1>Woops something went wrong</h1>".to_string())
+                ),
+                Some(paste) => Html(
+                    templates::Paste { paste_content: paste.content.as_str() }
+                    .render()
+                    .unwrap_or_else(|_| "<h1>Woops something went wrong</h1>".to_string())
+                ),
+            };
+            html_response.into_response()
+        },
+        Err(_) => (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            "Something went wrong when fetching for the paste in the DB.",
+        ).into_response()
     }
 }
 
