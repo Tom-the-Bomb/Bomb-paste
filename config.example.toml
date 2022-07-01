@@ -1,5 +1,0 @@
-mongo_username = "Your mongo username"
-mongo_password = "Your mongo password"
-mongo_cluster = "Your cluster name"
-database_name = "Your database name"
-collection_name = "Your collection name"

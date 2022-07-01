@@ -86,7 +86,7 @@ async fn get_paste(Path(params): Path<String>) -> Html<String> {
 
 
 async fn init_mongo() -> mongodb::error::Result<()> {
-    let config = helpers::get_config();
+    let config = helpers::get_config().unwrap();
     let mongo_url = format!(
         "mongodb+srv://{}:{}@{}.efj2q.mongodb.net/?retryWrites=true&w=majority",
         config.mongo_username, config.mongo_password, config.mongo_cluster,

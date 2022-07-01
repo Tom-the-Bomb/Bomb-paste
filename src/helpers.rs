@@ -1,5 +1,5 @@
-use std::{env, fs};
-use toml::from_str;
+use std::env;
+use dotenv::dotenv;
 use crate::models::Config;
 
 use rand::{thread_rng, Rng};
@@ -13,20 +13,22 @@ pub fn generate_id(length: usize) -> String {
         .collect::<String>()
 }
 
-pub fn get_config() -> Config {
-    let cwd = get_cwd();
-    println!("{}", cwd);
-    let config_fp = fs::read_to_string(format!("{cwd}/config.toml"))
-        .expect("Config could not be loaded");
+pub fn get_config() -> Result<Config, &'static str> {
+    drop(dotenv());
 
-    from_str(config_fp.as_str()).unwrap()
-}
+    const ERR_MSG: &str = "ENV vars could not be loaded";
+    let config = Config {
+        mongo_username: env::var("MONGO_USERNAME")
+            .map_err(|_| ERR_MSG)?,
+        mongo_password: env::var("MONGO_PASSWORD")
+            .map_err(|_| ERR_MSG)?,
+        mongo_cluster: env::var("MONGO_CLUSTER")
+            .map_err(|_| ERR_MSG)?,
+        database_name: env::var("DATABASE_NAME")
+            .map_err(|_| ERR_MSG)?,
+        collection_name: env::var("COLLECTION_NAME")
+            .map_err(|_| ERR_MSG)?,
+    };
 
-pub fn get_cwd() -> String {
-    let path = env::current_dir();
-
-    match path {
-        Ok(res) => res.to_str().unwrap_or("").to_string(),
-        Err(_) => "".to_string(),
-    }
+    Ok(config)
 }
