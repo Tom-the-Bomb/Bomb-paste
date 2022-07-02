@@ -88,10 +88,10 @@ footer {
     height: 100vh;
     background-color: var(--bgcolor);
     justify-content: center;
-    align-items: center;
 }
 
 #help-table {
+    margin-top: 6vh;
     width: 70vw;
     color: rgb(226, 224, 247);
     border-color: rgb(167, 157, 157)!important;
