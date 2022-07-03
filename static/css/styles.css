@@ -2,7 +2,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@300&display=swap');
 
 :root {
-    --bgcolor: rgb(70, 70, 84);
+    --bgcolor: rgb(66, 66, 84);
     --fonts: "JetBrains Mono", "monospace", "sans-serif";
 }
 
@@ -76,6 +76,26 @@ footer {
     outline: none!important;
     border: none!important;
     font-family: "Source Sans Pro", "monospace", "sans-serif";
+    scrollbar-width: 10px;
+    scrollbar-color: rgb(28, 27, 29);
+    scrollbar-track-color: transparent;
+}
+
+#language-select::-webkit-scrollbar {
+    width: 10px;
+}
+
+#language-select::-webkit-scrollbar-thumb {
+    background-color: rgba(55, 55, 65);
+    border-radius: 10px;
+}
+
+#language-select::-webkit-scrollbar-thumb:hover {
+    background-color: rgb(35, 35, 45);
+}
+
+#language-select::-webkit-scrollbar-track {
+    background-color: none;
 }
 
 #nav-right-element {
