@@ -11,6 +11,8 @@ pub struct Index {}
 pub struct Help {
     pub min_content_length: usize,
     pub max_content_length: usize,
+    pub max_upload_rate: u64,
+    pub max_upload_per: u64,
 }
 
 

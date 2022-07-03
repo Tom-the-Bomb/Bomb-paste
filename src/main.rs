@@ -36,6 +36,9 @@ static COLLECTION: OnceLock<Collection<models::PasteModel>> = OnceLock::new();
 const MIN_PASTE_LENGTH: usize = 0;
 const MAX_PASTE_LENGTH: usize = 500_000;
 
+const MAX_UPLOAD_RATE: u64 = 1;
+const MAX_UPLOAD_PER: u64 = 3;
+
 
 async fn post_upload(Json(payload): Json<models::UploadPayload>) -> impl IntoResponse {
     if payload.content.len() > MIN_PASTE_LENGTH {
@@ -85,6 +88,8 @@ async fn get_help() -> Html<String> {
     let template = templates::Help {
         min_content_length: MIN_PASTE_LENGTH,
         max_content_length: MAX_PASTE_LENGTH,
+        max_upload_rate: MAX_UPLOAD_RATE,
+        max_upload_per: MAX_UPLOAD_PER,
     };
     Html(template.render()
         .unwrap_or_else(|_| "<h1>Woops something went wrong</h1>".to_string())
@@ -171,7 +176,7 @@ async fn main() {
                     )
                 }))
                 .layer(BufferLayer::new(1024))
-                .layer(RateLimitLayer::new(1, Duration::from_secs(3)))
+                .layer(RateLimitLayer::new(MAX_UPLOAD_RATE, Duration::from_secs(MAX_UPLOAD_PER)))
             )
         )
         .route("/:paste_id", get(get_paste))

@@ -85,7 +85,7 @@ footer {
 #help-main-content {
     display: flex;
     width: 100%;
-    height: 100vh;
+    min-height: 100vh;
     background-color: var(--bgcolor);
     justify-content: center;
 }
@@ -99,4 +99,8 @@ footer {
 
 #help-table th, td {
     border-color: rgb(170, 170, 194)!important;
+}
+
+#api-example {
+    color: rgb(189, 178, 178);
 }
