@@ -76,18 +76,18 @@ footer {
     outline: none!important;
     border: none!important;
     font-family: "Source Sans Pro", "monospace", "sans-serif";
-    scrollbar-width: 10px;
+    scrollbar-width: 0.7rem;
     scrollbar-color: rgb(28, 27, 29);
     scrollbar-track-color: transparent;
 }
 
 #language-select::-webkit-scrollbar {
-    width: 10px;
+    width: 0.7rem;
 }
 
 #language-select::-webkit-scrollbar-thumb {
     background-color: rgba(55, 55, 65);
-    border-radius: 10px;
+    border-radius: 0.7rem;
 }
 
 #language-select::-webkit-scrollbar-thumb:hover {
