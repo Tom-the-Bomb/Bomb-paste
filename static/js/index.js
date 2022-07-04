@@ -9,6 +9,8 @@ async function main() {
 
     if (hasEditor) {
         editor.setTheme('ace/theme/dracula');
+        editor.renderer.setScrollMargin(20);
+        editor.renderer.setPadding(8);
         editor.setShowPrintMargin(false);
 
         editor.setBehavioursEnabled(true);
