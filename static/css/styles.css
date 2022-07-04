@@ -2,7 +2,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@300&display=swap');
 
 :root {
-    --bgcolor: rgb(66, 66, 84);
+    --bgcolor: rgb(66, 67, 80);
     --fonts: "JetBrains Mono", "monospace", "sans-serif";
 }
 
@@ -54,6 +54,7 @@ footer {
     justify-content: center;
     color: rgb(233, 197, 197);
     text-align: center;
+    overflow: auto;
     background-color: var(--bgcolor);
     width: 100%!important;
     height: 100vh;
