@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}BombPaste - 500{% endblock %}
+{% block main_content %}
+<div id="not-found">
+    <h1 class="PageNotFound" id="not-found-text">
+        <span style="color: rgb(197, 147, 147)">500</span>
+        Internal Server Error :(
+    </h1><br>
+    <p style="color: rgb(163, 145, 145)">
+        Please make an issue over
+        <a class="useful-link" href="https://github.com/Tom-the-Bomb/Bomb-paste/issues/new" target="_blank">here</a> 🙏
+    </p><br><br>
+    <img src="../assets/rooBulli.png" id="mystery-image">
+</div>
+{% endblock %}
+
+{% block additional_meta %}
+<meta name="description" content="500 Internal Server Error">
+<meta property="og:image" content="https://raw.githubusercontent.com/Tom-the-Bomb/Bomb-paste/master/static/assets/rooBulli.png">
+{% endblock %}
+
+{% block language_select %}
+{% endblock %}

@@ -6,7 +6,7 @@ mod templates;
 
 use axum::{
     error_handling::HandleErrorLayer,
-    response::{Html, IntoResponse},
+    response::IntoResponse,
     routing::{get, post, get_service},
     http::StatusCode,
     extract::Path,
@@ -20,7 +20,6 @@ use mongodb::{
     Collection,
     Client,
 };
-use askama::Template;
 use std::sync::OnceLock;
 use std::net::SocketAddr;
 use std::time::Duration;
@@ -41,6 +40,7 @@ const MAX_UPLOAD_PER: u64 = 3;
 
 
 async fn post_upload(Json(payload): Json<models::UploadPayload>) -> impl IntoResponse {
+    // handles the POST request to upload a paste
     if payload.content.len() > MIN_PASTE_LENGTH {
 
         if payload.content.len() > MAX_PASTE_LENGTH {
@@ -76,29 +76,27 @@ async fn post_upload(Json(payload): Json<models::UploadPayload>) -> impl IntoRes
 }
 
 
-async fn get_root() -> Html<String> {
+async fn get_root() -> impl IntoResponse {
+    // renders index.html, for GET / (root)
     let template = templates::Index {};
-    Html(template.render()
-        .unwrap_or_else(|_| "<h1>Woops something went wrong</h1>".to_string())
-    )
+    helpers::render_template(template)
 }
 
 
-async fn get_help() -> Html<String> {
+async fn get_help() -> impl IntoResponse {
+    // renders help.html, for GET /help (help page)
     let template = templates::Help {
         min_content_length: MIN_PASTE_LENGTH,
         max_content_length: MAX_PASTE_LENGTH,
         max_upload_rate: MAX_UPLOAD_RATE,
         max_upload_per: MAX_UPLOAD_PER,
     };
-    Html(template.render()
-        .unwrap_or_else(|_| "<h1>Woops something went wrong</h1>".to_string())
-    )
+    helpers::render_template(template)
 }
 
 
 async fn get_paste(Path(params): Path<String>) -> impl IntoResponse {
-
+    // tries to fetch a paste from DB and renders /:paste_id to display it
     let mut parts = params.split(".");
     let paste_id = parts.next().unwrap_or("not found");
 
@@ -109,19 +107,12 @@ async fn get_paste(Path(params): Path<String>) -> impl IntoResponse {
 
     match paste_result {
         Ok(paste) => {
-            let html_response: Html<String> = match paste {
-                None => Html(
-                    templates::NotFound {}
-                    .render()
-                    .unwrap_or_else(|_| "<h1>Woops something went wrong</h1>".to_string())
-                ),
-                Some(paste) => Html(
+            match paste {
+                None => helpers::render_template(templates::NotFound {}),
+                Some(paste) => helpers::render_template(
                     templates::Paste { paste_content: paste.content.as_str() }
-                    .render()
-                    .unwrap_or_else(|_| "<h1>Woops something went wrong</h1>".to_string())
                 ),
-            };
-            html_response.into_response()
+            }
         },
         Err(_) => (
             StatusCode::INTERNAL_SERVER_ERROR,
@@ -132,6 +123,7 @@ async fn get_paste(Path(params): Path<String>) -> impl IntoResponse {
 
 
 async fn init_mongo(config: &models::Config) -> mongodb::error::Result<()> {
+    // connects to the mongo database
     let mongo_url = format!(
         "mongodb+srv://{}:{}@{}.efj2q.mongodb.net/?retryWrites=true&w=majority",
         config.mongo_username, config.mongo_password, config.mongo_cluster,
@@ -147,6 +139,7 @@ async fn init_mongo(config: &models::Config) -> mongodb::error::Result<()> {
 
 
 async fn run(app: Router<Body>, port: u16) {
+    // runs the webserver
     let addr = SocketAddr::from(([0, 0, 0, 0], port));
     let server = axum::Server::bind(&addr)
         .serve(app.into_make_service())

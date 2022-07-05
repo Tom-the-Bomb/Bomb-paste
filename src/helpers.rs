@@ -1,6 +1,13 @@
 use std::env;
 use dotenv::dotenv;
+use askama::Template;
+use axum::{
+    http::StatusCode,
+    response::{IntoResponse, Response, Html},
+};
+
 use crate::models::Config;
+use crate::templates;
 
 use rand::{thread_rng, Rng};
 use rand::distributions::Alphanumeric;
@@ -31,4 +38,24 @@ pub fn get_config() -> Result<Config, &'static str> {
     };
 
     Ok(config)
+}
+
+pub fn render_template(template: impl Template) -> Response {
+    match template.render() {
+        Ok(rendered) => Html(rendered).into_response(),
+        Err(_) => {
+            let error_template = templates::InternalError {};
+
+            match error_template.render() {
+                Ok(rendered) => (
+                    StatusCode::INTERNAL_SERVER_ERROR,
+                    Html(rendered),
+                ),
+                Err(_) => (
+                    StatusCode::INTERNAL_SERVER_ERROR,
+                    Html("<h1>Something really went wrong D:</h1>".to_string()),
+                ),
+            }.into_response()
+        }
+    }
 }
