@@ -21,7 +21,7 @@
             </th>
             <td><b>Save button</b> - Saves the current actively edited paste
                 redirects them to <code>/:paste_id.&lt;language&gt;</code>
-                Also can be activated via shortcut: <kbd>Ctrl + S</kbd>
+                Also can be activated via shortcut: <kbd>Ctrl S</kbd>
                 (Only enabled when the user is on root and editing a paste)
                 <br><br>
                 <b>💡 Note:</b> You can also modify the url yourself directly to change the
@@ -60,7 +60,7 @@
                 The <u>save</u> button also just calls this endpoint internally.<br><br>
                 <b>Limits:</b>&nbsp;&nbsp;<code>content</code> length must be between
                 <code>{{ min_content_length }}</code> and <code>{{ max_content_length }}</code> characters
-                & <b>Max</b> <code>{{ max_upload_rate }}</code> reqs per <code>{{ max_upload_per }}s</code><br>
+                & <b>Max</b> <code>1</code> reqs per <code>{{ max_upload_per }}s</code><br>
                 <b>Example Response:</b>&nbsp;&nbsp;<code>{"id": "gEDjNieoN3LsFCWTJIEc"}</code><br>
                 <b>Example Request:</b>
                 <pre style="color: rgb(189, 178, 178)!important;"><code>

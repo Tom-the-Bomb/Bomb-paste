@@ -6,10 +6,10 @@ mod templates;
 
 use axum::{
     error_handling::HandleErrorLayer,
-    response::IntoResponse,
+    response::{Response, IntoResponse},
     routing::{get, post, get_service},
     http::StatusCode,
-    extract::Path,
+    extract::{ConnectInfo, Path},
     body::Body,
     Router,
     Json,
@@ -20,27 +20,52 @@ use mongodb::{
     Collection,
     Client,
 };
-use std::sync::OnceLock;
-use std::net::SocketAddr;
-use std::time::Duration;
+use std::{
+    collections::HashMap,
+    sync::{RwLock, OnceLock},
+    net::SocketAddr,
+    time::Duration,
+};
+use chrono::{DateTime, Utc};
 use tower::{
     ServiceBuilder,
     buffer::BufferLayer,
     limit::RateLimitLayer
 };
 use tower_http::services::ServeDir;
+use lazy_static::lazy_static;
 
 static COLLECTION: OnceLock<Collection<models::PasteModel>> = OnceLock::new();
+
+lazy_static! {
+    static ref RATELIMITS: RwLock<HashMap<SocketAddr, DateTime<Utc>>> = RwLock::new(HashMap::new());
+}
 
 const MIN_PASTE_LENGTH: usize = 0;
 const MAX_PASTE_LENGTH: usize = 500_000;
 
-const MAX_UPLOAD_RATE: u64 = 1;
-const MAX_UPLOAD_PER: u64 = 3;
+const MAX_GLOBAL_UPLOAD_RATE: u64 = 100;
+const MAX_GLOBAL_UPLOAD_PER: u64 = 1;
 
 
-async fn post_upload(Json(payload): Json<models::UploadPayload>) -> impl IntoResponse {
+async fn post_upload(
+    ConnectInfo(addr): ConnectInfo<SocketAddr>,
+    Json(payload): Json<models::UploadPayload>,
+) -> Response {
     // handles the POST request to upload a paste
+
+    match RATELIMITS.write() {
+        Ok(mut ratelimits) => {
+            if helpers::is_ratelimited(&mut *ratelimits, &addr) {
+                return (
+                    StatusCode::TOO_MANY_REQUESTS,
+                    format!("Woah slow down, the limit is 1 request per {} seconds per ip", helpers::MAX_UPLOAD_PER),
+                ).into_response()
+            }
+        }
+        Err(_) => (),
+    }
+
     if payload.content.len() > MIN_PASTE_LENGTH {
 
         if payload.content.len() > MAX_PASTE_LENGTH {
@@ -76,26 +101,25 @@ async fn post_upload(Json(payload): Json<models::UploadPayload>) -> impl IntoRes
 }
 
 
-async fn get_root() -> impl IntoResponse {
+async fn get_root(ConnectInfo(_): ConnectInfo<SocketAddr>) -> Response {
     // renders index.html, for GET / (root)
     let template = templates::Index {};
     helpers::render_template(template)
 }
 
 
-async fn get_help() -> impl IntoResponse {
+async fn get_help(ConnectInfo(_): ConnectInfo<SocketAddr>) -> Response {
     // renders help.html, for GET /help (help page)
     let template = templates::Help {
         min_content_length: MIN_PASTE_LENGTH,
         max_content_length: MAX_PASTE_LENGTH,
-        max_upload_rate: MAX_UPLOAD_RATE,
-        max_upload_per: MAX_UPLOAD_PER,
+        max_upload_per: helpers::MAX_UPLOAD_PER,
     };
     helpers::render_template(template)
 }
 
 
-async fn get_paste(Path(params): Path<String>) -> impl IntoResponse {
+async fn get_paste(ConnectInfo(_): ConnectInfo<SocketAddr>, Path(params): Path<String>) -> Response {
     // tries to fetch a paste from DB and renders /:paste_id to display it
     let mut parts = params.split(".");
     let paste_id = parts.next().unwrap_or("not found");
@@ -133,7 +157,11 @@ async fn init_mongo(config: &models::Config) -> mongodb::error::Result<()> {
     let client = Client::with_options(client_options)?;
     let database = client.database(config.database_name.as_str());
 
-    COLLECTION.set(database.collection::<models::PasteModel>(config.collection_name.as_str())).unwrap();
+    COLLECTION.set(
+        database.collection::<models::PasteModel>(
+            config.collection_name.as_str()
+        )
+    ).unwrap();
     Ok(())
 }
 
@@ -142,7 +170,7 @@ async fn run(app: Router<Body>, port: u16) {
     // runs the webserver
     let addr = SocketAddr::from(([0, 0, 0, 0], port));
     let server = axum::Server::bind(&addr)
-        .serve(app.into_make_service())
+        .serve(app.into_make_service_with_connect_info::<SocketAddr>())
         .with_graceful_shutdown(async {
             tokio::signal::ctrl_c()
                 .await
@@ -169,17 +197,21 @@ async fn main() {
                     )
                 }))
                 .layer(BufferLayer::new(1024))
-                .layer(RateLimitLayer::new(MAX_UPLOAD_RATE, Duration::from_secs(MAX_UPLOAD_PER)))
+                .layer(RateLimitLayer::new(
+                    MAX_GLOBAL_UPLOAD_RATE,
+                    Duration::from_secs(MAX_GLOBAL_UPLOAD_PER)
+                ))
             )
         )
         .route("/:paste_id", get(get_paste))
         .fallback(get_service(ServeDir::new("./static/"))
-        .handle_error(|err| async move {
-            (
-                StatusCode::INTERNAL_SERVER_ERROR,
-                format!("Failed to serve files: {err}"),
-            )
-        }));
+            .handle_error(|err| async move {
+                (
+                    StatusCode::INTERNAL_SERVER_ERROR,
+                    format!("Failed to serve files: {err}"),
+                )
+            })
+        );
 
     println!("[App Initialized]");
     init_mongo(&config).await.unwrap();

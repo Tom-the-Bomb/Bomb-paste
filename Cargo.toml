@@ -7,10 +7,12 @@ edition = "2021"
 [dependencies]
 rand = "0.8.5"
 axum = "0.5.9"
+chrono = "0.4.19"
 serde = "1.0.137"
 mongodb = "2.2.2"
 askama = "0.11.1"
 dotenv = "0.15.0"
+lazy_static = "1.4.0"
 tower = {version = "0.4.13", features = ["full"] }
 tower-http = { version = "0.3.4", features = ["full"] }
 tokio = { version = "1.19.2", features = ["full"] }

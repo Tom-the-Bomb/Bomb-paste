@@ -1,3 +1,5 @@
+ace.require('ace/ext/language_tools');
+
 try {
     var hasEditor = true;
     var editor = ace.edit('content');
@@ -14,9 +16,13 @@ async function main() {
         editor.setShowPrintMargin(false);
 
         editor.setBehavioursEnabled(true);
-        editor.session.setOptions({
+        editor.setOptions({
             tabSize: 4,
             useSoftTabs: true,
+            showLineNumbers: true,
+            enableSnippets: true,
+            enableBasicAutocompletion: true,
+            enableLiveAutocompletion: true,
         });
 
         editor.container.style.lineHeight = 2;
@@ -85,7 +91,7 @@ async function main() {
 
     if (copyButton) {
         copyButton.addEventListener('click', () => {
-            let path = window.location.href;
+            const path = window.location.href;
             navigator.clipboard.writeText(path);
             alert('Copied URL to clipboard!');
         });
@@ -225,17 +231,22 @@ async function makePostRequest(value) {
         }),
     };
 
-    let resp = await fetch('/upload', payload);
+    try {
+        let resp = await fetch('/upload', payload);
 
-    if (resp.ok) {
-        return await resp.json();
-    } else {
-        if ([400, 413, 500].includes(resp.status)){
-            alert(await resp.text());
+        if (resp.ok) {
+            return await resp.json();
         } else {
-            alert(`${resp.status}: Something went wrong :(`);
-        }
+            if ([400, 413, 429, 500].includes(resp.status)){
+                alert(await resp.text());
+            } else {
+                alert(`${resp.status}: Something went wrong :(`);
+            }
 
+            return null;
+        }
+    } catch {
+        alert('Something went wrong D:');
         return null;
     }
 }

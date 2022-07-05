@@ -1,4 +1,8 @@
-use std::env;
+use std::{
+    net::SocketAddr,
+    collections::HashMap,
+    env,
+};
 use dotenv::dotenv;
 use askama::Template;
 use axum::{
@@ -8,9 +12,13 @@ use axum::{
 
 use crate::models::Config;
 use crate::templates;
+use chrono::{DateTime, Utc};
 
 use rand::{thread_rng, Rng};
 use rand::distributions::Alphanumeric;
+
+pub const MAX_UPLOAD_PER: u64 = 3;
+
 
 pub fn generate_id(length: usize) -> String {
     let mut rng = thread_rng();
@@ -56,6 +64,26 @@ pub fn render_template(template: impl Template) -> Response {
                     Html("<h1>Something really went wrong D:</h1>".to_string()),
                 ),
             }.into_response()
+        }
+    }
+}
+
+pub fn is_ratelimited(
+    mapping: &mut HashMap<SocketAddr, DateTime<Utc>>,
+    ip: &SocketAddr,
+) -> bool {
+    let now = Utc::now();
+    match mapping.get(ip) {
+        Some(timestamp) => {
+            let pass = (now - *timestamp).num_seconds() as u64 >= MAX_UPLOAD_PER;
+            if pass {
+                mapping.insert(*ip, now);
+            }
+            !pass
+        }
+        None => {
+            mapping.insert(*ip, now);
+            false
         }
     }
 }
