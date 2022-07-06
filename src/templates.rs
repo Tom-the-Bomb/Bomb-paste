@@ -19,6 +19,7 @@ pub struct Help {
 #[template(path = "notfound.html")]
 pub struct NotFound {}
 
+
 #[derive(Template)]
 #[template(path = "internalerror.html")]
 pub struct InternalError {}

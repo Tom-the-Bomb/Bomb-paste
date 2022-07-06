@@ -22,7 +22,6 @@ async function main() {
             showLineNumbers: true,
             enableSnippets: true,
             enableBasicAutocompletion: true,
-            enableLiveAutocompletion: true,
         });
 
         editor.container.style.lineHeight = 2;
