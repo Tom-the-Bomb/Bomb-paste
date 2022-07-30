@@ -8,8 +8,9 @@ use axum::{
     error_handling::HandleErrorLayer,
     response::{Response, IntoResponse},
     routing::{get, post, get_service},
-    http::StatusCode,
     extract::{ConnectInfo, Path},
+    handler::Handler,
+    http::StatusCode,
     body::Body,
     Router,
     Json,
@@ -21,6 +22,7 @@ use mongodb::{
     Client,
 };
 use std::{
+    io::{Error, ErrorKind},
     collections::HashMap,
     sync::{RwLock, OnceLock},
     net::SocketAddr,
@@ -33,6 +35,7 @@ use tower::{
     limit::RateLimitLayer
 };
 use tower_http::services::ServeDir;
+use tower::ServiceExt;
 use lazy_static::lazy_static;
 
 static COLLECTION: OnceLock<Collection<models::PasteModel>> = OnceLock::new();
@@ -181,6 +184,10 @@ async fn run(app: Router<Body>, port: u16) {
     server.await.expect("Failed to start server");
 }
 
+async fn not_found_fallback() -> Response {
+    // a handler for the not found fallback on the router
+    helpers::render_template(templates::NotFound {})
+}
 
 #[tokio::main]
 async fn main() {
@@ -204,7 +211,15 @@ async fn main() {
             )
         )
         .route("/:paste_id", get(get_paste))
-        .fallback(get_service(ServeDir::new("./static/"))
+        .fallback(
+            get_service(
+                ServeDir::new("./static/")
+                    .not_found_service(
+                        not_found_fallback
+                            .into_service()
+                            .map_err(|_| Error::from(ErrorKind::Other))
+                    )
+            )
             .handle_error(|err| async move {
                 (
                     StatusCode::INTERNAL_SERVER_ERROR,
