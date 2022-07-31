@@ -146,7 +146,7 @@ async fn get_paste(
     match paste_result {
         Ok(paste) => {
             match paste {
-                None => helpers::render_template(templates::NotFound {}),
+                None => helpers::render_not_found(),
                 Some(paste) => {
                     if raw {
                         paste.content.into_response()
@@ -203,7 +203,7 @@ async fn run(app: Router<Body>, port: u16) {
 
 async fn not_found_fallback() -> Response {
     // a handler for the not found fallback on the router
-    helpers::render_template(templates::NotFound {})
+    helpers::render_not_found()
 }
 
 #[tokio::main]

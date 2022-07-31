@@ -21,6 +21,7 @@ pub const MAX_UPLOAD_PER: u64 = 3;
 
 
 pub fn generate_id(length: usize) -> String {
+    // generates a random alphanumeric string for the paste id
     let mut rng = thread_rng();
 
     (0..length)
@@ -34,6 +35,7 @@ fn var(name: &'static str) -> Result<String, &'static str> {
 }
 
 pub fn get_config() -> Result<Config, &'static str> {
+    // fetches the config ENV variables
     drop(dotenv());
 
     let config = Config {
@@ -48,9 +50,19 @@ pub fn get_config() -> Result<Config, &'static str> {
     Ok(config)
 }
 
-pub fn render_template(template: impl Template) -> Response {
+pub fn render_template_with_status(
+    template: impl Template,
+    status: Option<StatusCode>,
+) -> Response {
+    // renders a template with a provided status code
+    let statuscode = status
+        .unwrap_or(StatusCode::OK);
+
     match template.render() {
-        Ok(rendered) => Html(rendered).into_response(),
+        Ok(rendered) => (
+            statuscode,
+            Html(rendered),
+        ).into_response(),
         Err(_) => {
             let error_template = templates::InternalError {};
 
@@ -68,11 +80,29 @@ pub fn render_template(template: impl Template) -> Response {
     }
 }
 
+pub fn render_template(template: impl Template) -> Response {
+    // renders a regular template with an OK status
+    render_template_with_status(
+        template,
+        Some(StatusCode::OK),
+    )
+}
+
+pub fn render_not_found() -> Response {
+    // renders the not found (404) template
+    render_template_with_status(
+        templates::NotFound {},
+        Some(StatusCode::NOT_FOUND),
+    )
+}
+
 pub fn is_ratelimited(
     mapping: &mut HashMap<SocketAddr, DateTime<Utc>>,
     ip: &SocketAddr,
 ) -> bool {
+    // checks if a client is ratelimited by IP
     let now = Utc::now();
+
     match mapping.get(ip) {
         Some(timestamp) => {
             let pass = (now - *timestamp).num_seconds() as u64 >= MAX_UPLOAD_PER;
