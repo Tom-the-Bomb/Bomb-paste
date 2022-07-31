@@ -28,3 +28,9 @@ pub struct PasteModel {
 pub struct PasteJsonResponse {
     pub id: String,
 }
+
+
+#[derive(Deserialize)]
+pub struct GetRawQuery {
+    pub raw: Option<bool>,
+}

@@ -8,19 +8,21 @@ use axum::{
     error_handling::HandleErrorLayer,
     response::{Response, IntoResponse},
     routing::{get, post, get_service},
-    extract::{ConnectInfo, Path},
+    extract::{ConnectInfo, Query, Path},
     handler::Handler,
     http::StatusCode,
     body::Body,
     Router,
     Json,
 };
+
 use mongodb::{
     options::ClientOptions,
     bson::doc,
     Collection,
     Client,
 };
+
 use std::{
     io::{Error, ErrorKind},
     collections::HashMap,
@@ -28,15 +30,17 @@ use std::{
     net::SocketAddr,
     time::Duration,
 };
-use chrono::{DateTime, Utc};
+
 use tower::{
     ServiceBuilder,
     buffer::BufferLayer,
     limit::RateLimitLayer
 };
+
 use tower_http::services::ServeDir;
-use tower::ServiceExt;
 use lazy_static::lazy_static;
+use chrono::{DateTime, Utc};
+use tower::ServiceExt;
 
 static COLLECTION: OnceLock<Collection<models::PasteModel>> = OnceLock::new();
 
@@ -122,7 +126,11 @@ async fn get_help(ConnectInfo(_): ConnectInfo<SocketAddr>) -> Response {
 }
 
 
-async fn get_paste(ConnectInfo(_): ConnectInfo<SocketAddr>, Path(params): Path<String>) -> Response {
+async fn get_paste(
+    ConnectInfo(_): ConnectInfo<SocketAddr>,
+    Query(query): Query<models::GetRawQuery>,
+    Path(params): Path<String>,
+) -> Response {
     // tries to fetch a paste from DB and renders /:paste_id to display it
     let mut parts = params.split(".");
     let paste_id = parts.next().unwrap_or("not found");
@@ -132,13 +140,22 @@ async fn get_paste(ConnectInfo(_): ConnectInfo<SocketAddr>, Path(params): Path<S
         doc! { "id": paste_id }, None
     ).await;
 
+    let raw = query.raw
+        .unwrap_or(false);
+
     match paste_result {
         Ok(paste) => {
             match paste {
                 None => helpers::render_template(templates::NotFound {}),
-                Some(paste) => helpers::render_template(
-                    templates::Paste { paste_content: paste.content.as_str() }
-                ),
+                Some(paste) => {
+                    if raw {
+                        paste.content.into_response()
+                    } else {
+                        helpers::render_template(
+                            templates::Paste { paste_content: paste.content.as_str() }
+                        )
+                    }
+                },
             }
         },
         Err(_) => (
