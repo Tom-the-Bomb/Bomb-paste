@@ -34,9 +34,9 @@ fn var(name: &'static str) -> Result<String, &'static str> {
         .map_err(|_| "ENV vars could not be loaded")
 }
 
+/// fetches the config ENV variables
 pub fn get_config() -> Result<Config, &'static str> {
-    // fetches the config ENV variables
-    drop(dotenv());
+    dotenv().ok();
 
     let config = Config {
         mongo_username: var("MONGO_USERNAME")?,
@@ -50,11 +50,11 @@ pub fn get_config() -> Result<Config, &'static str> {
     Ok(config)
 }
 
-pub fn render_template_with_status(
-    template: impl Template,
+/// renders a template with a provided status code
+pub fn render_template_with_status<T: Template>(
+    template: T,
     status: Option<StatusCode>,
 ) -> Response {
-    // renders a template with a provided status code
     let statuscode = status
         .unwrap_or(StatusCode::OK);
 
@@ -80,27 +80,27 @@ pub fn render_template_with_status(
     }
 }
 
-pub fn render_template(template: impl Template) -> Response {
-    // renders a regular template with an OK status
+/// renders a regular template with an OK status
+pub fn render_template<T: Template>(template: T) -> Response {
     render_template_with_status(
         template,
         Some(StatusCode::OK),
     )
 }
 
+/// renders the not found (404) template
 pub fn render_not_found() -> Response {
-    // renders the not found (404) template
     render_template_with_status(
         templates::NotFound {},
         Some(StatusCode::NOT_FOUND),
     )
 }
 
+/// checks if a client is ratelimited by IP
 pub fn is_ratelimited(
     mapping: &mut HashMap<SocketAddr, DateTime<Utc>>,
     ip: &SocketAddr,
 ) -> bool {
-    // checks if a client is ratelimited by IP
     let now = Utc::now();
 
     match mapping.get(ip) {

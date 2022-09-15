@@ -1,9 +1,5 @@
 #![feature(once_cell)]
 
-mod models;
-mod helpers;
-mod templates;
-
 use axum::{
     error_handling::HandleErrorLayer,
     response::{Response, IntoResponse},
@@ -32,6 +28,7 @@ use std::{
 };
 
 use tower::{
+    ServiceExt,
     ServiceBuilder,
     buffer::BufferLayer,
     limit::RateLimitLayer
@@ -40,7 +37,11 @@ use tower::{
 use tower_http::services::ServeDir;
 use lazy_static::lazy_static;
 use chrono::{DateTime, Utc};
-use tower::ServiceExt;
+
+mod models;
+mod helpers;
+mod templates;
+
 
 static COLLECTION: OnceLock<Collection<models::PasteModel>> = OnceLock::new();
 
@@ -55,26 +56,22 @@ const MAX_GLOBAL_UPLOAD_RATE: u64 = 100;
 const MAX_GLOBAL_UPLOAD_PER: u64 = 1;
 
 
+/// handles the POST request to upload a paste
 async fn post_upload(
     ConnectInfo(addr): ConnectInfo<SocketAddr>,
     Json(payload): Json<models::UploadPayload>,
 ) -> Response {
-    // handles the POST request to upload a paste
-
-    match RATELIMITS.write() {
-        Ok(mut ratelimits) => {
-            if helpers::is_ratelimited(&mut *ratelimits, &addr) {
-                return (
-                    StatusCode::TOO_MANY_REQUESTS,
-                    format!("Woah slow down, the limit is 1 request per {} seconds per ip", helpers::MAX_UPLOAD_PER),
-                ).into_response()
-            }
+    if let Ok(mut ratelimits) = RATELIMITS.write() {
+        if helpers::is_ratelimited(&mut *ratelimits, &addr) {
+            return (
+                StatusCode::TOO_MANY_REQUESTS,
+                format!("Woah slow down, the limit is 1 request per {} seconds per ip", helpers::MAX_UPLOAD_PER),
+            )
+            .into_response()
         }
-        Err(_) => (),
     }
 
     if payload.content.len() > MIN_PASTE_LENGTH {
-
         if payload.content.len() > MAX_PASTE_LENGTH {
             (
                 StatusCode::PAYLOAD_TOO_LARGE,
@@ -95,28 +92,27 @@ async fn post_upload(
                 Err(_) => (
                     StatusCode::INTERNAL_SERVER_ERROR,
                     "Something went wrong when updating the DB.",
-                ).into_response(),
+                )
+                .into_response(),
             }
         }
-
     } else {
         (
             StatusCode::BAD_REQUEST,
             format!("Paste content must be at least {MIN_PASTE_LENGTH} characters in length."),
-        ).into_response()
+        )
+        .into_response()
     }
 }
 
-
+/// renders index.html, for GET / (root)
 async fn get_root(ConnectInfo(_): ConnectInfo<SocketAddr>) -> Response {
-    // renders index.html, for GET / (root)
     let template = templates::Index {};
     helpers::render_template(template)
 }
 
-
+/// renders help.html, for GET /help (help page)
 async fn get_help(ConnectInfo(_): ConnectInfo<SocketAddr>) -> Response {
-    // renders help.html, for GET /help (help page)
     let template = templates::Help {
         min_content_length: MIN_PASTE_LENGTH,
         max_content_length: MAX_PASTE_LENGTH,
@@ -125,14 +121,13 @@ async fn get_help(ConnectInfo(_): ConnectInfo<SocketAddr>) -> Response {
     helpers::render_template(template)
 }
 
-
+/// tries to fetch a paste from DB and renders /:paste_id to display it
 async fn get_paste(
     ConnectInfo(_): ConnectInfo<SocketAddr>,
     Query(query): Query<models::GetRawQuery>,
     Path(params): Path<String>,
 ) -> Response {
-    // tries to fetch a paste from DB and renders /:paste_id to display it
-    let mut parts = params.split(".");
+    let mut parts = params.split('.');
     let paste_id = parts.next().unwrap_or("not found");
 
     let collection = COLLECTION.get().unwrap();
@@ -161,13 +156,13 @@ async fn get_paste(
         Err(_) => (
             StatusCode::INTERNAL_SERVER_ERROR,
             "Something went wrong when fetching for the paste in the DB.",
-        ).into_response()
+        )
+        .into_response()
     }
 }
 
-
+/// connects to the mongo database
 async fn init_mongo(config: &models::Config) -> mongodb::error::Result<()> {
-    // connects to the mongo database
     let mongo_url = format!(
         "mongodb+srv://{}:{}@{}.efj2q.mongodb.net/?retryWrites=true&w=majority",
         config.mongo_username, config.mongo_password, config.mongo_cluster,
@@ -181,13 +176,13 @@ async fn init_mongo(config: &models::Config) -> mongodb::error::Result<()> {
         database.collection::<models::PasteModel>(
             config.collection_name.as_str()
         )
-    ).unwrap();
+    )
+    .unwrap();
     Ok(())
 }
 
-
+/// runs the webserver
 async fn run(app: Router<Body>, port: u16) {
-    // runs the webserver
     let addr = SocketAddr::from(([0, 0, 0, 0], port));
     let server = axum::Server::bind(&addr)
         .serve(app.into_make_service_with_connect_info::<SocketAddr>())
@@ -201,8 +196,8 @@ async fn run(app: Router<Body>, port: u16) {
     server.await.expect("Failed to start server");
 }
 
+/// a handler for the not found fallback on the router
 async fn not_found_fallback() -> Response {
-    // a handler for the not found fallback on the router
     helpers::render_not_found()
 }
 

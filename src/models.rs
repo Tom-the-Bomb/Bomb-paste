@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 
 
-#[derive(Deserialize)]
+#[derive(Debug, Clone, Deserialize)]
 pub struct Config {
     pub mongo_username: String,
     pub mongo_password: String,
@@ -12,25 +12,25 @@ pub struct Config {
 }
 
 
-#[derive(Deserialize)]
+#[derive(Debug, Clone, Deserialize)]
 pub struct UploadPayload {
     pub content: String,
 }
 
 
-#[derive(Clone, Debug, Deserialize, Serialize)]
+#[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct PasteModel {
     pub id: String,
     pub content: String,
 }
 
-#[derive(Serialize)]
+#[derive(Debug, Clone, Serialize)]
 pub struct PasteJsonResponse {
     pub id: String,
 }
 
 
-#[derive(Deserialize)]
+#[derive(Debug, Clone, Deserialize)]
 pub struct GetRawQuery {
     pub raw: Option<bool>,
 }
