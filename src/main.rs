@@ -46,7 +46,8 @@ mod templates;
 static COLLECTION: OnceLock<Collection<models::PasteModel>> = OnceLock::new();
 
 lazy_static! {
-    static ref RATELIMITS: RwLock<HashMap<SocketAddr, DateTime<Utc>>> = RwLock::new(HashMap::new());
+    static ref RATELIMITS: RwLock<HashMap<SocketAddr, DateTime<Utc>>> =
+        RwLock::new(HashMap::new());
 }
 
 const MIN_PASTE_LENGTH: usize = 0;
@@ -165,7 +166,9 @@ async fn get_paste(
 async fn init_mongo(config: &models::Config) -> mongodb::error::Result<()> {
     let mongo_url = format!(
         "mongodb+srv://{}:{}@{}.efj2q.mongodb.net/?retryWrites=true&w=majority",
-        config.mongo_username, config.mongo_password, config.mongo_cluster,
+        config.mongo_username,
+        config.mongo_password,
+        config.mongo_cluster,
     );
 
     let client_options = ClientOptions::parse(mongo_url).await?;
@@ -178,6 +181,7 @@ async fn init_mongo(config: &models::Config) -> mongodb::error::Result<()> {
         )
     )
     .unwrap();
+
     Ok(())
 }
 

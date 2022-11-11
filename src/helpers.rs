@@ -19,9 +19,9 @@ use rand::distributions::Alphanumeric;
 
 pub const MAX_UPLOAD_PER: u64 = 3;
 
-
+/// helper function to generate random alphanumeric string
+/// of `length` length for the paste id
 pub fn generate_id(length: usize) -> String {
-    // generates a random alphanumeric string for the paste id
     let mut rng = thread_rng();
 
     (0..length)
