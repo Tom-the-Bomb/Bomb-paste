@@ -248,6 +248,9 @@ async fn main() {
     init_mongo(&config).await.unwrap();
     println!("[Connected to Mongo Database]");
 
-    let port = config.port.parse::<u16>().unwrap();
+    let port = config.port
+        .parse::<u16>()
+        .unwrap();
+
     run(app, port).await;
 }
