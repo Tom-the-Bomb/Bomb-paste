@@ -107,22 +107,24 @@ async fn post_upload(
 }
 
 /// renders index.html, for GET / (root)
+#[allow(clippy::unused_async)]
 async fn get_root(ConnectInfo(_): ConnectInfo<SocketAddr>) -> Response {
     let template = templates::Index {};
-    helpers::render_template(template)
+    helpers::render_template(&template)
 }
 
 /// renders help.html, for GET /help (help page)
+#[allow(clippy::unused_async)]
 async fn get_help(ConnectInfo(_): ConnectInfo<SocketAddr>) -> Response {
     let template = templates::Help {
         min_content_length: MIN_PASTE_LENGTH,
         max_content_length: MAX_PASTE_LENGTH,
         max_upload_per: helpers::MAX_UPLOAD_PER,
     };
-    helpers::render_template(template)
+    helpers::render_template(&template)
 }
 
-/// tries to fetch a paste from DB and renders /:paste_id to display it
+/// tries to fetch a paste from DB and renders `/:paste_id` to display it
 async fn get_paste(
     ConnectInfo(_): ConnectInfo<SocketAddr>,
     Query(query): Query<models::GetRawQuery>,
@@ -148,7 +150,7 @@ async fn get_paste(
                         paste.content.into_response()
                     } else {
                         helpers::render_template(
-                            templates::Paste { paste_content: paste.content.as_str() }
+                            &templates::Paste { paste_content: paste.content.as_str() }
                         )
                     }
                 },
@@ -193,7 +195,7 @@ async fn run(app: Router<Body>, port: u16) {
         .with_graceful_shutdown(async {
             tokio::signal::ctrl_c()
                 .await
-                .expect("Failed to await for SIGINT")
+                .expect("Failed to await for SIGINT");
         });
 
     println!("[Server Initialized]");
@@ -201,6 +203,7 @@ async fn run(app: Router<Body>, port: u16) {
 }
 
 /// a handler for the not found fallback on the router
+#[allow(clippy::unused_async)]
 async fn not_found_fallback() -> Response {
     helpers::render_not_found()
 }

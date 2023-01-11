@@ -52,7 +52,7 @@ pub fn get_config() -> Result<Config, &'static str> {
 
 /// renders a template with a provided status code
 pub fn render_template_with_status<T: Template>(
-    template: T,
+    template: &T,
     status: Option<StatusCode>,
 ) -> Response {
     let statuscode = status
@@ -81,7 +81,7 @@ pub fn render_template_with_status<T: Template>(
 }
 
 /// renders a regular template with an OK status
-pub fn render_template<T: Template>(template: T) -> Response {
+pub fn render_template<T: Template>(template: &T) -> Response {
     render_template_with_status(
         template,
         Some(StatusCode::OK),
@@ -91,12 +91,13 @@ pub fn render_template<T: Template>(template: T) -> Response {
 /// renders the not found (404) template
 pub fn render_not_found() -> Response {
     render_template_with_status(
-        templates::NotFound {},
+        &templates::NotFound {},
         Some(StatusCode::NOT_FOUND),
     )
 }
 
 /// checks if a client is ratelimited by IP
+#[allow(clippy::cast_sign_loss)]
 pub fn is_ratelimited(
     mapping: &mut HashMap<SocketAddr, DateTime<Utc>>,
     ip: &SocketAddr,

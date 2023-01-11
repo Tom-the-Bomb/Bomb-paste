@@ -1,5 +1,9 @@
 [package]
 name = "bomb-paste"
+description = "A very simple and basic paste service made using rust & axum"
+repository = "https://github.com/Tom-the-Bomb/Bomb-paste"
+keywords = ["paste", "axum", "web"]
+categories = ["Asynchronous", "Web Programming"]
 version = "0.1.0"
 license = "MIT"
 edition = "2021"
