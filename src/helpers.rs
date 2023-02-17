@@ -51,6 +51,7 @@ pub fn get_config() -> Result<Config, &'static str> {
 }
 
 /// renders a template with a provided status code
+#[allow(clippy::single_match_else)]
 pub fn render_template_with_status<T: Template>(
     template: &T,
     status: Option<StatusCode>,
