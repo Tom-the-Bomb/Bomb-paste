@@ -2,8 +2,21 @@
 @import url('https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@300&display=swap');
 
 :root {
-    --bgcolor: rgb(66, 67, 80);
+    --bgcolor: rgb(62, 64, 80);
     --fonts: "JetBrains Mono", "monospace", "sans-serif";
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    min-height: 100vh;
+    background-color: var(--bgcolor);
+}
+
+main {
+    display: flex;
+    flex-grow: 1;
 }
 
 footer {
@@ -26,7 +39,7 @@ footer {
     display: flex;
     font-family: var(--fonts);
     width: 100%!important;
-    height: 100vh;
+    flex-grow: 1;
     background-color: var(--bgcolor)!important;
     border: none !important;
     outline: none;
@@ -82,7 +95,8 @@ footer {
     scrollbar-track-color: transparent;
 }
 
-#language-select::-webkit-scrollbar {
+#language-select::-webkit-scrollbar,
+.ace_scrollbar::-webkit-scrollbar {
     width: 0.7rem;
 }
 
@@ -91,11 +105,21 @@ footer {
     border-radius: 0.7rem;
 }
 
+.ace_scrollbar::-webkit-scrollbar-thumb {
+    background-color: rgb(40, 40, 54);
+    border-radius: 0.7rem;
+}
+
 #language-select::-webkit-scrollbar-thumb:hover {
     background-color: rgb(35, 35, 45);
 }
 
-#language-select::-webkit-scrollbar-track {
+.ace_scrollbar::-webkit-scrollbar-thumb:hover {
+    background-color: rgb(28, 28, 39);
+}
+
+#language-select::-webkit-scrollbar-track,
+.ace_scrollbar::-webkit-scrollbar-track {
     background-color: none;
 }
 
