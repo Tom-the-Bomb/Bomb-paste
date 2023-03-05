@@ -113,7 +113,7 @@ async function main() {
                 event.preventDefault();
                 saveButton.click();
             }
-        }, false)
+        }, false);
     }
 
     $(function () {
@@ -242,11 +242,11 @@ async function makePostRequest(value) {
                 alert(`${resp.status}: Something went wrong :(`);
             }
 
-            return null;
+            return;
         }
     } catch {
         alert('Something went wrong D:');
-        return null;
+        return;
     }
 }
 
