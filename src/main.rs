@@ -1,4 +1,3 @@
-#![feature(once_cell)]
 
 use axum::{
     error_handling::HandleErrorLayer,
